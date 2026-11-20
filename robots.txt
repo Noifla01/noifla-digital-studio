@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /privacy-policy.html
+Disallow: /cookie-policy.html
+Disallow: /admin.html
+Disallow: /ticket.html
+
+# TODO: con il dominio definitivo aggiornare questo indirizzo
+Sitemap: https://noifla01.github.io/noifla-digital-studio/sitemap.xml
