@@ -1,225 +1,482 @@
-<!DOCTYPE html>
-<html lang="it" data-bs-theme="dark">
+<!doctype html>
+<html lang="it">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Noifla Digital Studio | Sito web per la tua attività a 49€/mese</title>
-  <meta name="description" content="Sito web moderno per attività locali: zero costi iniziali, online in 48 ore, manutenzione inclusa a 49€/mese. Disdici quando vuoi.">
-  <meta name="theme-color" content="#030712">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E⚡%3C/text%3E%3C/svg%3E">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link href="css/style.css" rel="stylesheet">
-  <!-- Cookiebot / Google Tag Manager: inserire lo snippet qui (vedi js/main.js → loadAnalytics) -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Noifla Digital Studio · Siti web per attività locali da 29€ ogni 30 giorni</title>
+  <meta name="description" content="Ti trovano, ti scelgono, ti scrivono. Il sito della tua attività da 29€ ogni 30 giorni: realizzazione, dominio e hosting inclusi, zero costi di attivazione, nessun vincolo.">
+  <meta name="theme-color" content="#05080f">
+  <meta name="color-scheme" content="dark">
+  <!-- TODO: con il dominio definitivo aggiornare canonical, og:url, og:image, JSON-LD, sitemap.xml e robots.txt -->
+  <link rel="canonical" href="https://noifla01.github.io/noifla-digital-studio/">
+  <link rel="icon" href="images/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="it_IT">
+  <meta property="og:site_name" content="Noifla Digital Studio">
+  <meta property="og:title" content="Ti trovano. Ti scelgono. Ti scrivono.">
+  <meta property="og:description" content="Il tuo sito professionale da 29€ ogni 30 giorni. Zero costi di attivazione, nessun vincolo.">
+  <meta property="og:url" content="https://noifla01.github.io/noifla-digital-studio/">
+  <meta property="og:image" content="https://noifla01.github.io/noifla-digital-studio/images/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Noifla Digital Studio: ti trovano, ti scelgono, ti scrivono">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Ti trovano. Ti scelgono. Ti scrivono.">
+  <meta name="twitter:description" content="Il tuo sito professionale da 29€ ogni 30 giorni. Zero costi di attivazione, nessun vincolo.">
+  <meta name="twitter:image" content="https://noifla01.github.io/noifla-digital-studio/images/og-image.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&display=swap"></noscript>
+  <link rel="stylesheet" href="css/style.css?v=7">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "ProfessionalService",
+        "@id": "https://noifla01.github.io/noifla-digital-studio/#studio",
+        "name": "Noifla Digital Studio",
+        "url": "https://noifla01.github.io/noifla-digital-studio/",
+        "logo": "https://noifla01.github.io/noifla-digital-studio/images/favicon.svg",
+        "image": "https://noifla01.github.io/noifla-digital-studio/images/og-image.png",
+        "email": "info@noifla.it",
+        "description": "Siti web per attività locali in abbonamento: Piano Base 29€ e Piano Completo 49€ ogni 30 giorni, con realizzazione, dominio, hosting cloud e SSL inclusi. Zero costi di attivazione, nessun vincolo di durata.",
+        "areaServed": "IT",
+        "knowsLanguage": "it",
+        "makesOffer": [
+          {
+            "@type": "Offer",
+            "name": "Piano Completo",
+            "description": "Realizzazione del sito (fino a 5 pagine o sezioni), dominio .it o .com a nome del cliente, hosting cloud e SSL, SEO di base e collegamento al profilo Google Business, fino a 3 modifiche ogni 30 giorni, aggiornamenti tecnici e di sicurezza.",
+            "price": "49",
+            "priceCurrency": "EUR",
+            "priceSpecification": { "@type": "UnitPriceSpecification", "price": "49", "priceCurrency": "EUR", "valueAddedTaxIncluded": false, "billingDuration": "P30D", "unitText": "30 giorni" }
+          },
+          {
+            "@type": "Offer",
+            "name": "Piano Base",
+            "description": "Realizzazione del sito, dominio, hosting cloud e certificato SSL. Manutenzione non inclusa: modifiche a 20€/ora.",
+            "price": "29",
+            "priceCurrency": "EUR",
+            "priceSpecification": { "@type": "UnitPriceSpecification", "price": "29", "priceCurrency": "EUR", "valueAddedTaxIncluded": false, "billingDuration": "P30D", "unitText": "30 giorni" }
+          }
+        ]
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          { "@type": "Question", "name": "Che differenza c'è tra i due piani?", "acceptedAnswer": { "@type": "Answer", "text": "Entrambi includono realizzazione del sito, dominio, hosting cloud e SSL. Il Completo (49€ ogni 30 giorni) aggiunge SEO di base, collegamento a Google Business e fino a 3 modifiche ogni 30 giorni. Con il Base (29€ ogni 30 giorni) le modifiche si pagano a parte, 20€/ora." } },
+          { "@type": "Question", "name": "Cosa succede se disdico?", "acceptedAnswer": { "@type": "Answer", "text": "Nessun vincolo di durata e nessuna penale: disdici quando vuoi. Il dominio è tuo e ti diamo gratis il codice di trasferimento." } },
+          { "@type": "Question", "name": "Posso cambiare piano?", "acceptedAnswer": { "@type": "Answer", "text": "Sì, puoi passare da un piano all'altro in qualsiasi momento." } },
+          { "@type": "Question", "name": "Il dominio è mio?", "acceptedAnswer": { "@type": "Answer", "text": "Sì, è registrato a tuo nome. Se vai via ti diamo gratis il codice di trasferimento." } }
+        ]
+      }
+    ]
+  }
+  </script>
 </head>
-<body id="top">
-  <!-- Luci ambientali: strato di profondità dietro i contenuti -->
-  <div class="ambient" aria-hidden="true"><i class="orb o1"></i><i class="orb o2"></i><i class="orb o3"></i></div>
-  <a class="visually-hidden-focusable" href="#main">Vai al contenuto</a>
-  
-  <!-- ========== NAVBAR ========== -->
-  <nav class="navbar navbar-expand-lg sticky-top glass-nav" id="nav">
-    <div class="container">
-      <a class="navbar-brand fw-bold" href="#top">Noifla <span class="text-accent">Digital Studio</span></a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menu" aria-controls="menu" aria-expanded="false" aria-label="Apri il menu">
-        <span class="navbar-toggler-icon"></span>
+<body>
+<a class="skip" href="#main">Vai al contenuto</a>
+
+<!-- ============ NAV ============ -->
+<header class="nav" data-nav>
+  <a class="nav__brand" href="#top" aria-label="Noifla Digital Studio, torna all'inizio"><svg class="wm " viewBox="0 0 214 64" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="butt" stroke-linejoin="miter"><path d="M4 24V60M4 41A15 15 0 0 1 34 41V60"/><circle cx="63" cy="42" r="17.5"/><path d="M95 26V60M95 7V16"/><path d="M117 60V17A10 10 0 0 1 127 7H136M106 27H134"/><path d="M148 4V60"/><circle cx="178" cy="42" r="17.5"/><path d="M195.5 24V60"/></g><rect class="wm-dot" x="204" y="53" width="7" height="7" fill="currentColor"/></svg></a>
+  <nav class="nav__links" aria-label="Principale">
+    <a class="pill" href="#portfolio">Lavori</a>
+    <a class="pill" href="#servizi">Servizi</a>
+    <a class="pill" href="#contatti">Contatti</a>
+  </nav>
+</header>
+
+<main id="main">
+
+<!-- ============ 1. HERO (con la fascia dei numeri) ============ -->
+<section class="hero" id="top" aria-labelledby="hero-title">
+  <div class="hero__shots" aria-hidden="true">
+    <div class="hshot hshot--desktop" style="--x:58%;--y:12%;--d:0.9;--i:0" data-depth="0.9"><img alt="" data-mock="trattoria" data-kind="desktop" width="400" height="300" decoding="async"></div>
+    <div class="hshot hshot--phone" style="--x:86%;--y:8%;--d:0.6;--i:1" data-depth="0.6"><img alt="" data-mock="parrucchiere" data-kind="phone" width="160" height="320" decoding="async"></div>
+    <div class="hshot hshot--desktop" style="--x:74%;--y:46%;--d:1;--i:2" data-depth="1"><img alt="" data-mock="fioraio" data-kind="desktop" width="400" height="300" decoding="async"></div>
+    <div class="hshot hshot--phone" style="--x:52%;--y:50%;--d:0.45;--i:3" data-depth="0.45"><img alt="" data-mock="bar" data-kind="phone" width="160" height="320" decoding="async"></div>
+    <div class="hshot hshot--desktop" style="--x:44%;--y:4%;--d:0.25;--i:4" data-depth="0.25"><img alt="" data-mock="gelateria" data-kind="desktop" width="400" height="300" decoding="async"></div>
+    <div class="hshot hshot--phone" style="--x:96%;--y:36%;--d:0.3;--i:5" data-depth="0.3"><img alt="" data-mock="barbiere" data-kind="phone" width="160" height="320" decoding="async"></div>
+  </div>
+  <div class="hero__content wrap">
+    <p class="hero__kicker">Noifla Digital Studio · siti web per attività locali</p>
+    <h1 class="hero__title" id="hero-title">
+      <span class="hero__line"><span class="word"><span>Ti</span></span> <span class="word"><span>trovano.</span></span></span>
+      <span class="hero__line"><span class="word"><span>Ti</span></span> <span class="word"><span>scelgono.</span></span></span>
+      <span class="hero__line hero__line--accent"><span class="word"><span>Ti</span></span> <span class="word"><span>scrivono.</span></span></span>
+    </h1>
+    <p class="hero__sub">Il tuo sito professionale da 29€ ogni 30 giorni. Zero costi di attivazione, nessun vincolo.</p>
+    <div class="hero__ctas">
+      <button class="pill pill--solid pill--lg" type="button" data-contact>Richiedi un preventivo <span class="arrow" aria-hidden="true">→</span></button>
+      <a class="pill pill--lg" href="#portfolio">Guarda i lavori</a>
+    </div>
+  </div>
+  <dl class="hero__facts wrap" aria-label="In breve">
+    <div class="hero__fact"><dt>2 giorni</dt><dd>lavorativi per la prima bozza</dd></div>
+    <div class="hero__fact"><dt>0€</dt><dd>di attivazione</dd></div>
+    <div class="hero__fact"><dt>da 29€<small>/30 giorni</small></dt><dd>dominio, hosting e SSL inclusi</dd></div>
+    <div class="hero__fact"><dt>Disdici</dt><dd>quando vuoi, senza vincoli né penali</dd></div>
+  </dl>
+</section>
+
+<!-- ============ 2. SERVIZI ============ -->
+<section class="sec services" id="servizi" aria-labelledby="services-title">
+  <div class="wrap">
+    <header class="sec__head">
+      <p class="label">Servizi</p>
+      <h2 class="sec__title" id="services-title">Tutto in un canone solo.</h2>
+      <p class="sec__sub">Realizzazione, dominio, hosting e manutenzione, ogni 30 giorni.</p>
+    </header>
+    <ol class="services__grid">
+      <li class="service" data-reveal><span class="service__n">01</span><h3 class="service__t">Sito su misura</h3><p class="service__d">Vetrina o landing, fino a 5 pagine o sezioni.</p></li>
+      <li class="service" data-reveal><span class="service__n">02</span><h3 class="service__t">Dominio e hosting</h3><p class="service__d">Dominio .it o .com a tuo nome, hosting cloud e SSL.</p></li>
+      <li class="service" data-reveal><span class="service__n">03</span><h3 class="service__t">Manutenzione</h3><p class="service__d">Fino a 3 modifiche ogni 30 giorni nel Piano Completo.</p></li>
+      <li class="service" data-reveal><span class="service__n">04</span><h3 class="service__t">Google Business</h3><p class="service__d">SEO di base e collegamento al tuo profilo.</p></li>
+      <li class="service" data-reveal><span class="service__n">05</span><h3 class="service__t">Sicurezza</h3><p class="service__d">Aggiornamenti tecnici e di sicurezza inclusi.</p></li>
+    </ol>
+  </div>
+</section>
+
+<!-- ============ 3. PORTFOLIO (slider orizzontale) ============ -->
+<section class="sec work" id="portfolio" aria-labelledby="work-title">
+  <div class="wrap">
+    <header class="sec__head sec__head--row">
+      <div>
+        <p class="label">Portfolio</p>
+        <h2 class="sec__title" id="work-title">Ecco come può essere il tuo.</h2>
+        <p class="sec__sub">Un sito online e sei concept. Trascina per scorrere, tocca per i dettagli.</p>
+      </div>
+      <div class="work__nav">
+        <button class="pill work__arrow" type="button" data-dir="-1" aria-label="Progetto precedente">←</button>
+        <button class="pill work__arrow" type="button" data-dir="1" aria-label="Progetto successivo">→</button>
+      </div>
+    </header>
+  </div>
+  <ul class="work__track" aria-label="Progetti e concept">
+    <li class="pcard">
+      <button class="pcard__face" type="button" aria-expanded="false" aria-controls="pc-lum">
+        <span class="pcard__mock">
+          <span class="mock-browser"><span class="mock-browser__bar" aria-hidden="true"><i></i><i></i><i></i></span><img src="images/portfolio/lumcostruzioni-desktop.webp" alt="Home page del sito di Lum Costruzioni su desktop" width="1056" height="583" loading="lazy" decoding="async" draggable="false"></span>
+          <span class="mock-phone"><img src="images/portfolio/lumcostruzioni-mobile.webp" alt="Home page del sito di Lum Costruzioni su smartphone" width="320" height="574" loading="lazy" decoding="async" draggable="false"></span>
+        </span>
+        <span class="pcard__cap"><span class="pcard__name">Lum Costruzioni</span><span class="pcard__meta">Edilizia · sito vetrina</span></span>
       </button>
-      <div class="collapse navbar-collapse" id="menu">
-        <ul class="navbar-nav mx-auto mb-3 mb-lg-0">
-          <li class="nav-item"><a class="nav-link" href="#metodo">Il metodo</a></li>
-          <li class="nav-item"><a class="nav-link" href="#confronto">Confronto</a></li>
-          <li class="nav-item"><a class="nav-link" href="#prezzo">Prezzo</a></li>
-          <li class="nav-item"><a class="nav-link" href="#faq">Domande frequenti</a></li>
+      <div class="pcard__detail" id="pc-lum"><p class="pcard__desc">Impresa di termocappotto, intonaci e facciate. Abbiamo realizzato il sito vetrina con servizi, galleria Prima &amp; Dopo e richiesta di preventivo.</p><ul class="pcard__tags"><li>Sito vetrina</li><li>Responsive</li><li>Prima &amp; Dopo</li></ul><a class="pill pill--solid" href="https://www.lumcostruzioni.it" target="_blank" rel="noopener">Visita il sito <span class="arrow" aria-hidden="true">↗</span></a></div>
+    </li>
+    <li class="pcard">
+      <button class="pcard__face" type="button" aria-expanded="false" aria-controls="pc-1">
+        <img alt="Concept di sito per una trattoria" data-mock="trattoria" data-kind="desktop" data-size="640" width="440" height="330" loading="lazy" decoding="async">
+        <span class="pcard__cap"><span class="pcard__name">Trattoria</span><span class="pcard__meta">Concept · ristorazione</span></span>
+      </button>
+      <div class="pcard__detail" id="pc-1"><ul><li>Menu del giorno cambiato con un messaggio</li><li>Prenotazioni su WhatsApp</li><li>Orari e mappa sempre giusti</li></ul><button class="pill pill--solid" type="button" data-contact="Trattoria">Voglio un sito così <span class="arrow" aria-hidden="true">→</span></button></div>
+    </li>
+    <li class="pcard">
+      <button class="pcard__face" type="button" aria-expanded="false" aria-controls="pc-2">
+        <img alt="Concept di sito per un parrucchiere" data-mock="parrucchiere" data-kind="desktop" data-size="640" width="440" height="330" loading="lazy" decoding="async">
+        <span class="pcard__cap"><span class="pcard__name">Parrucchiere</span><span class="pcard__meta">Concept · benessere</span></span>
+      </button>
+      <div class="pcard__detail" id="pc-2"><ul><li>Servizi e prezzi in chiaro</li><li>Appuntamento con un tocco</li><li>Pensato prima per il telefono</li></ul><button class="pill pill--solid" type="button" data-contact="Parrucchiere">Voglio un sito così <span class="arrow" aria-hidden="true">→</span></button></div>
+    </li>
+    <li class="pcard">
+      <button class="pcard__face" type="button" aria-expanded="false" aria-controls="pc-3">
+        <img alt="Concept di sito per un fioraio" data-mock="fioraio" data-kind="desktop" data-size="640" width="440" height="330" loading="lazy" decoding="async">
+        <span class="pcard__cap"><span class="pcard__name">Fioraio</span><span class="pcard__meta">Concept · negozio</span></span>
+      </button>
+      <div class="pcard__detail" id="pc-3"><ul><li>Composizioni e prezzi in vetrina</li><li>Ordini con un messaggio</li><li>Consegne in città in primo piano</li></ul><button class="pill pill--solid" type="button" data-contact="Fioraio">Voglio un sito così <span class="arrow" aria-hidden="true">→</span></button></div>
+    </li>
+    <li class="pcard">
+      <button class="pcard__face" type="button" aria-expanded="false" aria-controls="pc-4">
+        <img alt="Concept di sito per un B&amp;B" data-mock="bnb" data-kind="desktop" data-size="640" width="440" height="330" loading="lazy" decoding="async">
+        <span class="pcard__cap"><span class="pcard__name">B&amp;B</span><span class="pcard__meta">Concept · ospitalità</span></span>
+      </button>
+      <div class="pcard__detail" id="pc-4"><ul><li>Camere e foto in una pagina</li><li>Contatto diretto, senza portali</li><li>Leggero anche con poco segnale</li></ul><button class="pill pill--solid" type="button" data-contact="B&amp;B">Voglio un sito così <span class="arrow" aria-hidden="true">→</span></button></div>
+    </li>
+    <li class="pcard">
+      <button class="pcard__face" type="button" aria-expanded="false" aria-controls="pc-5">
+        <img alt="Concept di sito per un panificio" data-mock="panificio" data-kind="desktop" data-size="640" width="440" height="330" loading="lazy" decoding="async">
+        <span class="pcard__cap"><span class="pcard__name">Panificio</span><span class="pcard__meta">Concept · alimentari</span></span>
+      </button>
+      <div class="pcard__detail" id="pc-5"><ul><li>Prodotti del giorno sempre aggiornati</li><li>Ordini da ritirare su WhatsApp</li><li>Orari e indicazioni in evidenza</li></ul><button class="pill pill--solid" type="button" data-contact="Panificio">Voglio un sito così <span class="arrow" aria-hidden="true">→</span></button></div>
+    </li>
+    <li class="pcard">
+      <button class="pcard__face" type="button" aria-expanded="false" aria-controls="pc-6">
+        <img alt="Concept di sito per una palestra" data-mock="palestra" data-kind="desktop" data-size="640" width="440" height="330" loading="lazy" decoding="async">
+        <span class="pcard__cap"><span class="pcard__name">Palestra</span><span class="pcard__meta">Concept · sport</span></span>
+      </button>
+      <div class="pcard__detail" id="pc-6"><ul><li>Calendario dei corsi a colpo d'occhio</li><li>Prezzi e abbonamenti chiari</li><li>Richiesta di prova su WhatsApp</li></ul><button class="pill pill--solid" type="button" data-contact="Palestra">Voglio un sito così <span class="arrow" aria-hidden="true">→</span></button></div>
+    </li>
+  </ul>
+</section>
+
+<!-- ============ 4. PER CHI LAVORIAMO (tab su desktop, slider su mobile) ============ -->
+<section class="sec who" id="per-chi" aria-labelledby="who-title">
+  <div class="wrap">
+    <header class="sec__head">
+      <p class="label">Per chi lavoriamo</p>
+      <h2 class="sec__title" id="who-title">Ti riconosci in una di queste?</h2>
+    </header>
+    <div class="who__grid">
+      <div class="who__tabs" role="tablist" aria-label="Tipi di attività" aria-orientation="vertical">
+        <button class="who__tab is-active" type="button" role="tab" id="wt-1" aria-selected="true" aria-controls="wp-1"><span class="who__n">01</span>Ristoranti, pizzerie e bar</button>
+        <button class="who__tab" type="button" role="tab" id="wt-2" aria-selected="false" aria-controls="wp-2" tabindex="-1"><span class="who__n">02</span>Parrucchieri ed estetisti</button>
+        <button class="who__tab" type="button" role="tab" id="wt-3" aria-selected="false" aria-controls="wp-3" tabindex="-1"><span class="who__n">03</span>Negozi e botteghe</button>
+        <button class="who__tab" type="button" role="tab" id="wt-4" aria-selected="false" aria-controls="wp-4" tabindex="-1"><span class="who__n">04</span>B&amp;B e case vacanza</button>
+      </div>
+      <div class="who__panels">
+        <article class="who__panel is-active" id="wp-1" role="tabpanel" aria-labelledby="wt-1">
+          <h3 class="who__name">Ristoranti, pizzerie e bar</h3>
+          <dl class="who__facts">
+            <div><dt>Il problema</dt><dd>Online c’è il menu vecchio, e chi prenota chiama mentre cucini.</dd></div>
+            <div><dt>Cosa facciamo</dt><dd>Menu e orari sempre aggiornati, prenotazioni su WhatsApp.</dd></div>
+            <div class="who__result"><dt>Il risultato</dt><dd>Chi ti cerca sa cosa cucini oggi e come prenotare.</dd></div>
+          </dl>
+          <figure class="who__shot"><img alt="Concept di sito per una pizzeria" data-mock="pizzeria" data-kind="poster" width="300" height="375" loading="lazy" decoding="async"></figure>
+        </article>
+        <article class="who__panel" id="wp-2" role="tabpanel" aria-labelledby="wt-2">
+          <h3 class="who__name">Parrucchieri ed estetisti</h3>
+          <dl class="who__facts">
+            <div><dt>Il problema</dt><dd>Il telefono squilla quando hai le mani occupate.</dd></div>
+            <div><dt>Cosa facciamo</dt><dd>Servizi e prezzi chiari, appuntamenti con un tocco su WhatsApp.</dd></div>
+            <div class="who__result"><dt>Il risultato</dt><dd>Ti scrivono sapendo già cosa vogliono.</dd></div>
+          </dl>
+          <figure class="who__shot"><img alt="Concept di sito per un barbiere" data-mock="barbiere" data-kind="poster" width="300" height="375" loading="lazy" decoding="async"></figure>
+        </article>
+        <article class="who__panel" id="wp-3" role="tabpanel" aria-labelledby="wt-3">
+          <h3 class="who__name">Negozi e botteghe</h3>
+          <dl class="who__facts">
+            <div><dt>Il problema</dt><dd>A serranda abbassata nessuno sa cosa vendi.</dd></div>
+            <div><dt>Cosa facciamo</dt><dd>Una vetrina online con prodotti, orari e indicazioni.</dd></div>
+            <div class="who__result"><dt>Il risultato</dt><dd>La tua vetrina resta accesa anche di notte.</dd></div>
+          </dl>
+          <figure class="who__shot"><img alt="Concept di sito per una libreria" data-mock="libreria" data-kind="poster" width="300" height="375" loading="lazy" decoding="async"></figure>
+        </article>
+        <article class="who__panel" id="wp-4" role="tabpanel" aria-labelledby="wt-4">
+          <h3 class="who__name">B&amp;B e case vacanza</h3>
+          <dl class="who__facts">
+            <div><dt>Il problema</dt><dd>Camere e contatti sparsi tra portali e social.</dd></div>
+            <div><dt>Cosa facciamo</dt><dd>Un sito leggero con camere, foto e contatto diretto.</dd></div>
+            <div class="who__result"><dt>Il risultato</dt><dd>Gli ospiti trovano tutto e ti scrivono direttamente.</dd></div>
+          </dl>
+          <figure class="who__shot"><img alt="Concept di sito per un B&amp;B" data-mock="bnb" data-kind="poster" width="300" height="375" loading="lazy" decoding="async"></figure>
+        </article>
+      </div>
+      <div class="who__dots" aria-hidden="true"><i class="is-active"></i><i></i><i></i><i></i></div>
+    </div>
+    <p class="who__cta">Non sei in elenco? <button class="ul" type="button" data-contact>Scrivici, la bozza la prepariamo anche per te →</button></p>
+  </div>
+</section>
+
+<!-- ============ 5. METODO ============ -->
+<section class="sec method" id="metodo" aria-labelledby="method-title">
+  <div class="wrap">
+    <header class="sec__head">
+      <p class="label">Il metodo</p>
+      <h2 class="sec__title" id="method-title">Dalla prima bozza al sito online.</h2>
+    </header>
+    <ol class="steps">
+      <li class="step" data-reveal><span class="step__n">01</span><h3 class="step__t">Bozza</h3><p class="step__d">Pronta in 2 giorni lavorativi.</p></li>
+      <li class="step" data-reveal><span class="step__n">02</span><h3 class="step__t">Revisioni</h3><p class="step__d">3 giri di revisione inclusi.</p></li>
+      <li class="step" data-reveal><span class="step__n">03</span><h3 class="step__t">Online</h3><p class="step__d">Dominio, hosting cloud e SSL attivi.</p></li>
+      <li class="step" data-reveal><span class="step__n">04</span><h3 class="step__t">Gestione</h3><p class="step__d">Con il Completo, 3 modifiche ogni 30 giorni.</p></li>
+    </ol>
+  </div>
+</section>
+
+<!-- ============ 6. PREZZI ============ -->
+<section class="sec plans" id="prezzi" aria-labelledby="plans-title">
+  <div class="wrap">
+    <header class="sec__head sec__head--row">
+      <div>
+        <p class="label">Prezzi</p>
+        <h2 class="sec__title" id="plans-title">Due piani, zero costi di attivazione.</h2>
+      </div>
+      <button class="ul plans__compare" type="button" data-bs-toggle="modal" data-bs-target="#compare">Confronta i piani nel dettaglio →</button>
+    </header>
+    <div class="plans__grid">
+      <article class="plan plan--main" aria-labelledby="plan-full">
+        <p class="plan__badge">Consigliato</p>
+        <h3 class="plan__name" id="plan-full">Piano Completo</h3>
+        <p class="plan__price">49€<span>/30 giorni</span></p>
+        <ul class="plan__list">
+          <li class="is-yes"><span class="visually-hidden">Incluso: </span>Realizzazione del sito, fino a 5 pagine o sezioni</li>
+          <li class="is-yes"><span class="visually-hidden">Incluso: </span>Dominio .it o .com a tuo nome, hosting cloud e SSL</li>
+          <li class="is-yes"><span class="visually-hidden">Incluso: </span>SEO di base e collegamento a Google Business</li>
+          <li class="is-yes"><span class="visually-hidden">Incluso: </span>Fino a 3 modifiche ogni 30 giorni</li>
+          <li class="is-yes"><span class="visually-hidden">Incluso: </span>Aggiornamenti tecnici e di sicurezza</li>
         </ul>
-        <button class="btn btn-cta" data-bs-toggle="modal" data-bs-target="#contattoModal">Richiedi Bozza Gratuita</button>
+        <button class="pill pill--solid pill--lg plan__cta" type="button" data-contact="Piano Completo">Scegli il Completo <span class="arrow" aria-hidden="true">→</span></button>
+      </article>
+      <article class="plan" aria-labelledby="plan-base">
+        <p class="plan__badge plan__badge--quiet">Per chi aggiorna raramente</p>
+        <h3 class="plan__name" id="plan-base">Piano Base</h3>
+        <p class="plan__price">29€<span>/30 giorni</span></p>
+        <ul class="plan__list">
+          <li class="is-yes"><span class="visually-hidden">Incluso: </span>Realizzazione del sito</li>
+          <li class="is-yes"><span class="visually-hidden">Incluso: </span>Dominio, hosting cloud e SSL</li>
+          <li class="is-no"><span class="visually-hidden">Non incluso: </span>SEO di base e Google Business</li>
+          <li class="is-no"><span class="visually-hidden">Non incluso: </span>Manutenzione: modifiche a 20€/ora</li>
+        </ul>
+        <button class="pill pill--lg plan__cta" type="button" data-contact="Piano Base">Scegli il Base</button>
+      </article>
+    </div>
+    <div class="plans__dots" aria-hidden="true"><i class="is-active"></i><i></i></div>
+    <ul class="perks" aria-label="Inclusi in entrambi i piani">
+      <li><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.6a4 4 0 1 0 0 6.8M7 10.8h6M7 13.4h6"/></svg>0€ di attivazione</li>
+      <li><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 7.6-1.7"/></svg>Nessun vincolo</li>
+      <li><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Bozza in 2 giorni</li>
+      <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.3-5.6M20 4v4.5h-4.5"/></svg>3 revisioni incluse</li>
+      <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h15l-3.5-3.5M20 16H5l3.5 3.5"/></svg>Cambi piano quando vuoi</li>
+      <li><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3.2 3 3.2 15 0 18M12 3c-3.2 3-3.2 15 0 18"/></svg>Il dominio è tuo</li>
+      <li><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18M7 14.5h4"/></svg>Stripe e fattura elettronica</li>
+    </ul>
+    <div class="plans__foot">
+      <p class="extras"><strong>Extra una tantum</strong> <span>Targhetta recensioni Google NFC e QR <b>25€</b></span> <span>Rifacimento totale <b>499€</b></span> <span>Riscatto del codice <b>499€</b></span></p>
+      <p class="plans__vat">Prezzi senza IVA: operazioni in regime forfettario (art. 1, commi 54-89, L. 190/2014).</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 7. DOMANDE E CONTATTI ============ -->
+<section class="sec close" id="contatti" aria-labelledby="close-title">
+  <div class="wrap close__grid">
+    <div class="close__faq">
+      <p class="label">Domande frequenti</p>
+      <h2 class="visually-hidden" id="close-title">Domande frequenti e contatti</h2>
+      <div class="accordion faq__list" id="faqList">
+        <div class="accordion-item">
+          <h3 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq0" aria-expanded="false" aria-controls="faq0">Che differenza c'è tra i due piani?</button></h3>
+          <div id="faq0" class="accordion-collapse collapse" data-bs-parent="#faqList"><div class="accordion-body">Entrambi includono realizzazione del sito, dominio, hosting cloud e SSL. Il Completo aggiunge SEO di base, collegamento a Google Business e fino a 3 modifiche ogni 30 giorni. Con il Base le modifiche si pagano a parte, 20€/ora.</div></div>
+        </div>
+        <div class="accordion-item">
+          <h3 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq1" aria-expanded="false" aria-controls="faq1">Cosa succede se disdico?</button></h3>
+          <div id="faq1" class="accordion-collapse collapse" data-bs-parent="#faqList"><div class="accordion-body">Nessun vincolo di durata e nessuna penale: disdici quando vuoi. Il dominio è tuo e ti diamo gratis il codice di trasferimento.</div></div>
+        </div>
+        <div class="accordion-item">
+          <h3 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2" aria-expanded="false" aria-controls="faq2">Posso cambiare piano?</button></h3>
+          <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqList"><div class="accordion-body">Sì, puoi passare da un piano all'altro in qualsiasi momento.</div></div>
+        </div>
+        <div class="accordion-item">
+          <h3 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3" aria-expanded="false" aria-controls="faq3">Il dominio è mio?</button></h3>
+          <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqList"><div class="accordion-body">Sì, è registrato a tuo nome. Se vai via ti diamo gratis il codice di trasferimento.</div></div>
+        </div>
       </div>
     </div>
-  </nav>
-  
-  <main id="main">
-    
-    <!-- ========== HERO ========== -->
-    <section class="hero">
-      <div class="container">
-        <div class="row align-items-center g-5">
-          <div class="col-lg-6">
-            <span class="badge-pill">⚡ Il nuovo standard digitale per le attività locali</span>
-            <h1 class="display-4 fw-bold mt-4">Un sito web moderno per la tua attività. Zero costi iniziali. Solo 49€/mese.</h1>
-            <p class="lead text-muted-2 mt-3">Realizziamo e gestiamo la presenza digitale del tuo locale in 48 ore. Consegna rapida, manutenzione inclusa e cancellazione quando vuoi.</p>
-            <div class="d-flex flex-wrap gap-3 mt-4">
-              <button class="btn btn-cta btn-lg" data-bs-toggle="modal" data-bs-target="#contattoModal">Richiedi Bozza Gratuita in 24h</button>
-              <a class="btn btn-ghost btn-lg" href="#metodo">Come Funziona</a>
-            </div>
-          </div>
-          <div class="col-lg-6">
-            <!-- Mockup browser 3D con strati fluttuanti -->
-            <div class="scene" aria-hidden="true">
-              <div class="device" id="device">
-                <div class="device-bar"><i></i><i></i><i></i><span class="url"><i class="bi bi-lock-fill"></i> trattoriadamarco.it</span></div>
-                <div class="site">
-                  <div class="site-nav"><b>Da Marco</b><span>Menu</span><span>Orari</span><span class="pill">Prenota</span></div>
-                  <div class="site-hero"><small>Cucina tradizionale</small><h2>Il vero sapore di casa, a due passi da te.</h2><div class="site-cta"><span>Prenota un tavolo</span><span>Indicazioni</span></div></div>
-                  <div class="site-grid"><div><b>Tagliatelle al ragù</b><span>12€</span></div><div><b>Tiramisù della casa</b><span>6€</span></div><div><b>Menu del giorno</b><span>15€</span></div></div>
-                </div>
-                <div class="float-card f-speed"><span class="gauge"><b>100</b></span><span><b>100/100</b> Speed Score<small>Performance &amp; Speed</small></span></div>
-                <div class="float-card f-maps"><i class="bi bi-star-fill"></i><span><b>4,9 su Google Maps</b><small>Scheda ottimizzata</small></span></div>
-                <div class="float-card f-live"><span class="dot"></span><span><b>Online in 48 ore</b></span></div>
-              </div>
-            </div>
-          </div>
-        </div>
+    <div class="close__contact">
+      <h3 class="close__title">Iniziamo dalla prima bozza.</h3>
+      <p class="close__lead">Pronta in 2 giorni lavorativi, con 3 giri di revisione. Rispondiamo entro 24 ore.</p>
+      <div class="close__ctas">
+        <button class="pill pill--solid pill--lg" type="button" data-contact>Richiedi un preventivo <span class="arrow" aria-hidden="true">→</span></button>
+        <a class="pill pill--lg" href="https://wa.me/390000000000" target="_blank" rel="noopener">Scrivici su WhatsApp</a>
       </div>
-    </section>
-    
-    <!-- ========== VANTAGGI ========== -->
-    <section class="py-5 border-block">
-      <div class="container">
-        <div class="row g-4 text-center">
-          <div class="col-6 col-lg-3"><div class="feat-box glass card-glass h-100"><i class="bi bi-lightning-charge-fill feat-icon"></i><p class="fw-semibold mb-0">Pronto in 48 Ore</p></div></div>
-          <div class="col-6 col-lg-3"><div class="feat-box glass card-glass h-100"><i class="bi bi-phone-fill feat-icon"></i><p class="fw-semibold mb-0">100% Mobile &amp; Veloci</p></div></div>
-          <div class="col-6 col-lg-3"><div class="feat-box glass card-glass h-100"><i class="bi bi-unlock-fill feat-icon"></i><p class="fw-semibold mb-0">Zero Vincoli: disdici quando vuoi</p></div></div>
-          <div class="col-6 col-lg-3"><div class="feat-box glass card-glass h-100"><i class="bi bi-tools feat-icon"></i><p class="fw-semibold mb-0">Manutenzione e Aggiornamenti Inclusi</p></div></div>
+      <a class="ul close__mail" href="mailto:info@noifla.it">info@noifla.it</a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer class="footer wrap">
+  <a class="footer__brand" href="#top" aria-label="Torna all'inizio"><svg class="wm " viewBox="0 0 214 64" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="butt" stroke-linejoin="miter"><path d="M4 24V60M4 41A15 15 0 0 1 34 41V60"/><circle cx="63" cy="42" r="17.5"/><path d="M95 26V60M95 7V16"/><path d="M117 60V17A10 10 0 0 1 127 7H136M106 27H134"/><path d="M148 4V60"/><circle cx="178" cy="42" r="17.5"/><path d="M195.5 24V60"/></g><rect class="wm-dot" x="204" y="53" width="7" height="7" fill="currentColor"/></svg></a>
+  <!-- TODO: P.IVA reale -->
+  <p class="footer__legal">© <span class="js-year">2026</span> Noifla Digital Studio · P.IVA 00000000000</p>
+  <ul class="footer__links">
+    <li><a class="ul" href="privacy-policy.html">Privacy</a></li>
+    <li><a class="ul" href="cookie-policy.html">Cookie</a></li>
+    <li><button class="ul" type="button" data-cookie-prefs>Preferenze cookie</button></li>
+  </ul>
+</footer>
+
+<!-- ============ MODALE CONTATTO (Bootstrap) ============ -->
+<div class="modal fade" id="contact" tabindex="-1" aria-labelledby="contact-title" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <form class="modal-body" id="contactForm" novalidate>
+        <div class="modal-top">
+          <h2 class="modal-title" id="contact-title">Richiedi un preventivo</h2>
+          <button class="modal-x" type="button" data-bs-dismiss="modal" aria-label="Chiudi">✕</button>
         </div>
-      </div>
-    </section>
-    
-    <!-- ========== METODO ========== -->
-    <section class="section" id="metodo">
-      <div class="container">
-        <h2 class="section-title text-center">Il nostro metodo in 3 passi</h2>
-        <div class="row g-4 mt-2">
-          <div class="col-md-4"><article class="glass card-glass h-100"><span class="step">1</span><h3 class="h5">Analisi &amp; Bozza</h3><p class="text-muted-2 mb-0">Creiamo la prima bozza visuale del tuo sito, senza impegno.</p></article></div>
-          <div class="col-md-4"><article class="glass card-glass h-100"><span class="step">2</span><h3 class="h5">Sviluppo in 48h</h3><p class="text-muted-2 mb-0">Strutturiamo il sito con codice leggero ed estetico, adattandomi alle tue esigenze.</p></article></div>
-          <div class="col-md-4"><article class="glass card-glass h-100"><span class="step">3</span><h3 class="h5">Gestione 100% Inclusa</h3><p class="text-muted-2 mb-0">Dominio, hosting e modifiche a menu e orari sono inclusi nei 49€/mese.</p></article></div>
+        <p class="modal-lead">Zero costi di attivazione, nessun vincolo. Prima bozza in 2 giorni lavorativi.</p>
+        <div class="field"><label for="cNome">Nome dell'attività</label><input id="cNome" name="nome" required autocomplete="organization"><span class="err">Inserisci il nome della tua attività.</span></div>
+        <div class="field"><label for="cContatto">Telefono o email</label><input id="cContatto" name="contatto" required autocomplete="tel"><span class="err">Inserisci un recapito per ricontattarti.</span></div>
+        <div class="field"><label for="cMsg">Messaggio (facoltativo)</label><textarea id="cMsg" name="messaggio" rows="3"></textarea></div>
+        <button class="pill pill--solid pill--lg w-100" type="submit">Invia la richiesta su WhatsApp</button>
+        <p class="note">Si apre WhatsApp con il messaggio già pronto. Usiamo i tuoi dati solo per risponderti: <a href="privacy-policy.html" target="_blank">Privacy Policy</a>.</p>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============ MODALE CONFRONTO PIANI (Bootstrap) ============ -->
+<div class="modal fade" id="compare" tabindex="-1" aria-labelledby="compare-title" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-body">
+        <div class="modal-top">
+          <h2 class="modal-title" id="compare-title">Confronta i piani</h2>
+          <button class="modal-x" type="button" data-bs-dismiss="modal" aria-label="Chiudi">✕</button>
         </div>
-      </div>
-    </section>
-    
-    <!-- ========== CONFRONTO ========== -->
-    <section class="section" id="confronto">
-      <div class="container">
-        <h2 class="section-title text-center">Noifla contro le agenzie tradizionali</h2>
-        <div class="table-responsive glass card-glass p-0 mt-4">
-          <table class="table table-borderless align-middle mb-0 compare">
-            <thead><tr><th scope="col"></th><th scope="col" class="text-accent">Noifla Digital Studio</th><th scope="col">Agenzia tradizionale</th></tr></thead>
+        <div class="cmp-wrap">
+          <table class="cmp">
+            <thead><tr><th scope="col"><span class="visually-hidden">Voce</span></th><th scope="col" class="cmp-main">Completo</th><th scope="col">Base</th></tr></thead>
             <tbody>
-              <tr><th scope="row">Costo iniziale</th><td><b>0€</b></td><td>2.000€+ di anticipo</td></tr>
-              <tr><th scope="row">Canone</th><td><b>49€/mese tutto incluso</b></td><td>Manutenzione e hosting a parte</td></tr>
-              <tr><th scope="row">Tempi di consegna</th><td><b>48 ore</b></td><td>Attese di mesi</td></tr>
-              <tr><th scope="row">Modifiche</th><td><b>In giornata via WhatsApp</b></td><td>Preventivo per ogni modifica</td></tr>
-              <tr><th scope="row">Vincoli</th><td><b>Nessuno</b></td><td>Contratti e costi di uscita</td></tr>
+              <tr><th scope="row">Prezzo</th><td class="cmp-main"><b>49€</b> /30 giorni</td><td><b>29€</b> /30 giorni</td></tr>
+              <tr><th scope="row">Realizzazione del sito</th><td class="cmp-main"><span class="cmp-y" aria-label="Incluso">✓</span> Vetrina o landing, fino a 5 pagine o sezioni</td><td><span class="cmp-y" aria-label="Incluso">✓</span> Inclusa</td></tr>
+              <tr><th scope="row">Dominio .it o .com a tuo nome</th><td class="cmp-main"><span class="cmp-y" aria-label="Incluso">✓</span></td><td><span class="cmp-y" aria-label="Incluso">✓</span></td></tr>
+              <tr><th scope="row">Hosting cloud e certificato SSL</th><td class="cmp-main"><span class="cmp-y" aria-label="Incluso">✓</span></td><td><span class="cmp-y" aria-label="Incluso">✓</span></td></tr>
+              <tr><th scope="row">SEO di base e profilo Google Business</th><td class="cmp-main"><span class="cmp-y" aria-label="Incluso">✓</span></td><td><span class="cmp-n" aria-label="Non incluso">✕</span></td></tr>
+              <tr><th scope="row">Manutenzione</th><td class="cmp-main"><span class="cmp-y" aria-label="Incluso">✓</span> Fino a 3 modifiche ogni 30 giorni: orari, prezzi, testi, foto, menu, promozioni</td><td><span class="cmp-n" aria-label="Non incluso">✕</span> Modifiche a parte, 20€/ora</td></tr>
+              <tr><th scope="row">Aggiornamenti tecnici e di sicurezza</th><td class="cmp-main"><span class="cmp-y" aria-label="Incluso">✓</span> Sempre inclusi</td><td><span class="cmp-n">—</span></td></tr>
+              <tr><th scope="row">Costi di attivazione</th><td class="cmp-main">0€</td><td>0€</td></tr>
+              <tr><th scope="row">Vincolo di durata</th><td class="cmp-main">Nessuno, disdici senza penali</td><td>Nessuno, disdici senza penali</td></tr>
+              <tr><th scope="row">Prima bozza</th><td class="cmp-main">2 giorni lavorativi, 3 giri di revisione</td><td>2 giorni lavorativi, 3 giri di revisione</td></tr>
+              <tr><th scope="row">Cambio di piano</th><td class="cmp-main">In qualsiasi momento</td><td>In qualsiasi momento</td></tr>
+              <tr><th scope="row">Pagamento</th><td class="cmp-main">Automatico con Stripe, fattura elettronica</td><td>Automatico con Stripe, fattura elettronica</td></tr>
             </tbody>
           </table>
         </div>
-      </div>
-    </section>
-    
-    <!-- ========== PRICING ========== -->
-    <section class="section" id="prezzo">
-      <div class="container">
-        <div class="row justify-content-center">
-          <div class="col-md-8 col-lg-5">
-            <div class="glass price-card text-center">
-              <span class="pop-badge">Più Scelto</span>
-              <p class="text-accent fw-semibold mb-1">L'offerta unica</p>
-              <p class="price mb-0">49€ <span>/ mese</span></p>
-              <p class="text-muted-2">Tutto incluso, senza costi di attivazione</p>
-              <ul class="list-unstyled text-start my-4">
-                <li><i class="bi bi-check-circle-fill"></i> Sito su misura</li>
-                <li><i class="bi bi-check-circle-fill"></i> Dominio .it/.com + hosting veloce</li>
-                <li><i class="bi bi-check-circle-fill"></i> Modifiche a menu e orari illimitate</li>
-                <li><i class="bi bi-check-circle-fill"></i> Ottimizzazione Google Maps</li>
-                <li><i class="bi bi-check-circle-fill"></i> Zero costi di attivazione</li>
-              </ul>
-              <button class="btn btn-cta btn-lg w-100" data-bs-toggle="modal" data-bs-target="#contattoModal">Attiva Ora la Tua Presenza Digitale</button>
-            </div>
-          </div>
+        <div class="cmp-extras">
+          <p class="label">Extra una tantum</p>
+          <ul>
+            <li><span>Targhetta recensioni Google con NFC e QR code, configurata e consegnata a mano, nessun abbonamento</span><b>25€</b></li>
+            <li><span>Rifacimento totale del sito</span><b>499€</b></li>
+            <li><span>Riscatto del codice per avere il sito in piena proprietà</span><b>499€</b></li>
+          </ul>
         </div>
+        <p class="plans__vat">Prezzi senza IVA: operazioni in regime forfettario (art. 1, commi 54-89, L. 190/2014).</p>
       </div>
-    </section>
-    
-    <!-- ========== FAQ ========== -->
-    <section class="section" id="faq">
-      <div class="container" style="max-width:760px">
-        <h2 class="section-title text-center">Domande frequenti</h2>
-        <div class="accordion accordion-flush mt-4" id="faqList">
-          <div class="accordion-item"><h3 class="accordion-header"><button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#f1" aria-expanded="true" aria-controls="f1">Ci sono vincoli contrattuali?</button></h3>
-            <div id="f1" class="accordion-collapse collapse show" data-bs-parent="#faqList"><div class="accordion-body">No. Non c'è alcun vincolo: puoi disdire quando vuoi.</div></div></div>
-            <div class="accordion-item"><h3 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#f2" aria-expanded="false" aria-controls="f2">Come gestite le modifiche al sito?</button></h3>
-              <div id="f2" class="accordion-collapse collapse" data-bs-parent="#faqList"><div class="accordion-body">Scrivici su WhatsApp: aggiorniamo menu, orari e contenuti in giornata.</div></div></div>
-              <div class="accordion-item"><h3 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#f3" aria-expanded="false" aria-controls="f3">Dominio e hosting sono inclusi?</button></h3>
-                <div id="f3" class="accordion-collapse collapse" data-bs-parent="#faqList"><div class="accordion-body">Sì. Dominio .it o .com e hosting veloce sono compresi nei 49€/mese.</div></div></div>
-                <div class="accordion-item"><h3 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#f4" aria-expanded="false" aria-controls="f4">E se la bozza non mi convince?</button></h3>
-                  <div id="f4" class="accordion-collapse collapse" data-bs-parent="#faqList"><div class="accordion-body">La bozza è gratuita e senza impegno: se non ti convince, non paghi nulla.</div></div></div>
-                </div>
-              </div>
-            </section>
-            
-            <!-- ========== CONTATTO RAPIDO ========== -->
-            <section class="section pt-0">
-              <div class="container">
-                <div class="glass cta-banner text-center">
-                  <h2 class="h3 fw-bold">Parliamone oggi: la bozza è gratuita</h2>
-                  <p class="text-muted-2">Scrivici su WhatsApp o via email e rispondiamo entro 24 ore.</p>
-                  <div class="d-flex flex-wrap justify-content-center gap-3">
-                    <a class="btn btn-cta btn-lg" href="https://wa.me/390000000000" target="_blank" rel="noopener"><i class="bi bi-whatsapp"></i> Scrivici su WhatsApp</a>
-                    <a class="btn btn-ghost btn-lg" href="mailto:info@noifla.it"><i class="bi bi-envelope"></i> info@noifla.it</a>
-                  </div>
-                </div>
-              </div>
-            </section>
-            
-          </main>
-          
-          <!-- ========== FOOTER ========== -->
-          <footer class="py-4 border-top-soft">
-            <div class="container d-flex flex-column flex-md-row justify-content-between gap-2 small text-muted-2">
-              <span>© <span class="js-year">2026</span> Noifla Digital Studio. Tutti i diritti riservati. P.IVA 00000000000</span>
-              <span><a href="privacy-policy.html" class="link-soft">Privacy Policy</a> · <a href="cookie-policy.html" class="link-soft">Cookie Policy</a> · <button type="button" class="link-btn" id="cookiePrefs">Preferenze Cookie</button></span>
-            </div>
-          </footer>
-          
-          <!-- ========== MODALE CONTATTO ========== -->
-          <div class="modal fade" id="contattoModal" tabindex="-1" aria-labelledby="contattoTitolo" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-              <div class="modal-content glass">
-                <div class="modal-header border-0">
-                  <h2 class="modal-title h5" id="contattoTitolo">Richiedi la tua bozza gratuita</h2>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi"></button>
-                </div>
-                <form class="modal-body needs-validation" id="contactForm" novalidate>
-                  <div class="mb-3"><label class="form-label" for="cNome">Nome dell'attività</label><input class="form-control" id="cNome" required autocomplete="organization"><div class="invalid-feedback">Inserisci il nome della tua attività.</div></div>
-                  <div class="mb-3"><label class="form-label" for="cContatto">Telefono o email</label><input class="form-control" id="cContatto" required autocomplete="tel"><div class="invalid-feedback">Inserisci un recapito per ricontattarti.</div></div>
-                  <div class="mb-3"><label class="form-label" for="cMsg">Messaggio (facoltativo)</label><textarea class="form-control" id="cMsg" rows="3"></textarea></div>
-                  <button class="btn btn-cta w-100" type="submit">Invia richiesta su WhatsApp</button>
-                  <p class="form-privacy-note">
-                    Premendo il pulsante si apre WhatsApp con il messaggio già pronto.
-                    Usiamo i tuoi dati solo per risponderti: <a href="privacy-policy.html" target="_blank">Privacy Policy</a>.
-                  </p>
-                </form>
-              </div>
-            </div>
-          </div>
-          
-          <!-- ========== BANNER COOKIE GDPR ========== -->
-          <div class="cookie-banner glass" id="cookieBanner" role="dialog" aria-live="polite" aria-labelledby="cookieTitolo" hidden>
-            <p class="fw-semibold mb-1" id="cookieTitolo">La tua privacy è importante</p>
-            <p class="small text-muted-2 mb-3">Usiamo cookie tecnici necessari al funzionamento del sito e, solo con il tuo consenso, cookie analitici per migliorarlo. Puoi cambiare idea in qualsiasi momento da «Preferenze Cookie». <a href="cookie-policy.html" class="link-soft">Leggi la Cookie Policy</a>.</p>
-            <div id="cookiePanel" class="mb-3" hidden>
-              <div class="form-check form-switch"><input class="form-check-input" type="checkbox" checked disabled id="cookieTech"><label class="form-check-label small" for="cookieTech">Tecnici (sempre attivi)</label></div>
-              <div class="form-check form-switch"><input class="form-check-input" type="checkbox" id="cookieAnalytics"><label class="form-check-label small" for="cookieAnalytics">Analitici</label></div>
-            </div>
-            <div class="d-flex flex-wrap gap-2">
-              <button class="btn btn-cta btn-sm" id="cookieAccept">Accetta Cookie</button>
-              <button class="btn btn-ghost btn-sm" id="cookieReject">Rifiuta</button>
-              <button class="btn btn-ghost btn-sm" id="cookieCustomize" aria-expanded="false">Personalizza</button>
-              <button class="btn btn-ghost btn-sm" id="cookieSave" hidden>Salva scelta</button>
-            </div>
-          </div>
-          
-          <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-          <script src="js/main.js"></script>
-        </body>
-        </html>
+    </div>
+  </div>
+</div>
+
+<div class="cookie" id="cookieBanner" role="dialog" aria-live="polite" aria-labelledby="cookieTitolo" hidden>
+  <p class="cookie__title" id="cookieTitolo">La tua privacy è importante</p>
+  <p>Usiamo cookie tecnici necessari al funzionamento del sito e, solo con il tuo consenso, cookie analitici per migliorarlo. Puoi cambiare idea da «Preferenze cookie». <a href="cookie-policy.html">Cookie Policy</a></p>
+  <div class="cookie__panel" id="cookiePanel" hidden>
+    <label><input type="checkbox" checked disabled> Tecnici (sempre attivi)</label>
+    <label><input type="checkbox" id="cookieAnalytics"> Analitici</label>
+  </div>
+  <div class="cookie__actions">
+    <button class="pill pill--solid" type="button" id="cookieAccept">Accetta</button>
+    <button class="pill" type="button" id="cookieReject">Rifiuta</button>
+    <button class="pill" type="button" id="cookieCustomize" aria-expanded="false">Personalizza</button>
+    <button class="pill" type="button" id="cookieSave" hidden>Salva scelta</button>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous" defer></script>
+<script src="js/data.js" defer></script>
+<script src="js/mockups.js" defer></script>
+<script src="js/main.js?v=4" defer></script>
+</body>
+</html>

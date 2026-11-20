@@ -1,0 +1,5 @@
+# GitHub Pages: non pubblicare il codice del backend (schema SQL e funzioni Supabase).
+exclude:
+  - supabase
+  - README.md
+  - CLAUDE.md
