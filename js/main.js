@@ -280,15 +280,17 @@
     var el = $('#contact');
     if (!el) return;
     var form = $('#contactForm'), msg = $('#cMsg');
-    var modal = null;
+    var modal = null, autoMsg = '';
     function getModal() { return modal || (window.bootstrap ? (modal = bootstrap.Modal.getOrCreateInstance(el)) : null); }
     document.addEventListener('click', function (e) {
       var t = e.target.closest('[data-contact]');
       if (!t) return;
       e.preventDefault();
       var topic = t.getAttribute('data-contact');
-      if (topic && !msg.value) {
-        msg.value = /^Piano /.test(topic) ? 'Mi interessa il ' + topic + '.' : 'Mi interessa un sito come il concept "' + topic + '".';
+      // il testo precompilato segue l'ultimo pulsante cliccato; se il cliente ha scritto qualcosa di suo, non lo tocchiamo
+      if (topic && (!msg.value.trim() || msg.value === autoMsg)) {
+        autoMsg = /^Piano /.test(topic) ? 'Mi interessa il ' + topic + '.' : 'Mi interessa un sito come il concept "' + topic + '".';
+        msg.value = autoMsg;
       }
       var m = getModal();
       if (m) m.show();
