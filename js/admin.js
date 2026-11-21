@@ -143,6 +143,10 @@
     if (c.loyalty_state === 'applicata') return badge('Tariffa fedeltà applicata', 'ok');
     return null;
   }
+  // da quando si contano le modifiche: dall'ultimo pagamento, o dal mese solare se non paga con Stripe
+  function quotaPeriod(c) {
+    return c.changes_period_kind === 'pagamento' ? 'dal pagamento del ' + fmtDate(c.changes_period_start) : 'questo mese';
+  }
   function quotaBadge(c) {
     if (c.plan !== 'piano_completo') return badge('A pagamento (20€/ora)', 'muted');
     var used = c.changes_used_this_month, q = c.changes_quota;
@@ -411,10 +415,10 @@
   async function loadClientTickets() {
     var c = state.current; if (!c) return;
     var q = $('#quotaBox'); q.textContent = '';
-    q.appendChild(el('span', { class: 'adm-muted', text: 'Questo mese: ' }));
+    q.appendChild(el('span', { class: 'adm-muted', text: 'Modifiche ' + quotaPeriod(c) + ': ' }));
     q.appendChild(quotaBadge(c));
     if (c.plan === 'piano_completo' && c.changes_used_this_month >= c.changes_quota) {
-      q.appendChild(el('span', { class: 'adm-hint', text: 'Plafond esaurito: le nuove modifiche di questo mese sono extra.' }));
+      q.appendChild(el('span', { class: 'adm-hint', text: 'Plafond esaurito: le nuove modifiche sono extra fino al prossimo pagamento.' }));
     }
     var r = await sb.from('tickets').select('*').eq('client_id', c.id).order('created_at', { ascending: false });
     var list = $('#clientTicketList'); list.textContent = '';
@@ -440,7 +444,7 @@
     if (!c || !title) { $('#tTitle').focus(); return; }
     var cat = $('#tCategory').value;
     if (cat === 'modifica_inclusa' && c.plan === 'piano_completo' && c.changes_used_this_month >= c.changes_quota &&
-      !confirm('Il cliente ha già usato ' + c.changes_used_this_month + '/' + c.changes_quota + ' modifiche questo mese. Registrarla comunque come inclusa?')) return;
+      !confirm('Il cliente ha già usato ' + c.changes_used_this_month + '/' + c.changes_quota + ' modifiche ' + quotaPeriod(c) + '. Registrarla comunque come inclusa?')) return;
     var r = await sb.from('tickets').insert({ client_id: c.id, title: title, description: $('#tDesc').value.trim() || null, category: cat, source: 'admin' });
     if (r.error) { toast(errText(r.error), true); return; }
     $('#tTitle').value = ''; $('#tDesc').value = '';
