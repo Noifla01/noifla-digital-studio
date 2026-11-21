@@ -10,8 +10,11 @@ supabase/
   migrations/20261120010000_portale_clienti.sql funzioni dell'area clienti (link personale)
   migrations/20261120020000_stripe.sql          funzioni per gli eventi Stripe
   migrations/20261120030000_avvisi_36_mesi.sql  coda degli avvisi email per i 36 mesi
+  migrations/20261121000000_modifiche_dal_pagamento.sql  modifiche incluse contate dall'ultimo pagamento
+  migrations/20261121010000_avvisi_ticket.sql   coda delle email per le nuove richieste dei clienti
   functions/stripe-webhook/                     riceve i webhook Stripe e manda gli avvisi email
   functions/apply-loyalty-price/                applica la tariffa ridotta su Stripe e nel database
+  functions/ticket-notify/                      email all'admin per ogni nuova richiesta di un cliente
 admin.html, css/admin.css, js/admin.js          gestionale
 ticket.html, js/ticket.js                       area clienti: richieste e storico
 js/supabase-config.js                           URL e chiave anon del progetto (usato da entrambe)
@@ -23,6 +26,8 @@ js/supabase-config.js                           URL e chiave anon del progetto (
 3. **Area clienti** con link personale (`ticket.html`): fatto
 4. **Webhook Stripe** (`functions/stripe-webhook`): fatto
 5. **Tariffa ridotta su Stripe** dopo 36 mensilità ed **email di avviso**: fatto
+6. **Modifiche incluse azzerate a ogni pagamento**: fatto
+7. **Email per ogni nuova richiesta** del cliente: fatto
 
 ## Messa in funzione (passi 1, 2 e 3)
 
@@ -34,7 +39,8 @@ js/supabase-config.js                           URL e chiave anon del progetto (
 ### 2. Crea il database
 - Apri **SQL Editor → New query** ed esegui, nell'ordine, i file di `migrations/`:
   `20261120000000_gestionale.sql`, `20261120010000_portale_clienti.sql`, `20261120020000_stripe.sql`,
-  `20261120030000_avvisi_36_mesi.sql`.
+  `20261120030000_avvisi_36_mesi.sql`, `20261121000000_modifiche_dal_pagamento.sql`,
+  `20261121010000_avvisi_ticket.sql`.
 - In alternativa, con la Supabase CLI: `supabase link` e poi `supabase db push`.
 
 ### 3. Crea il tuo utente admin
@@ -148,6 +154,20 @@ Per attivarle:
 
 Senza questi segreti le email non partono, ma badge e avvisi nella dashboard funzionano lo stesso.
 
+### Email per ogni nuova richiesta del cliente
+Quando un cliente invia una richiesta dall'area clienti ti arriva un'email con attività, tipo di richiesta,
+titolo, descrizione, referente, telefono e modifiche incluse già usate.
+Usa gli stessi segreti delle email di avviso (`RESEND_API_KEY`, `MAIL_FROM`, `ADMIN_EMAIL`, `ADMIN_URL`).
+Pubblica la funzione:
+```bash
+supabase functions deploy ticket-notify --no-verify-jwt
+```
+- La pagina passa alla funzione solo il codice del link: la funzione lo verifica e legge dal database
+  le richieste non ancora segnalate. Un estraneo senza un link valido non può far partire email.
+- Un'email per richiesta, una volta sola. Se l'invio fallisce, la richiesta resta in coda e parte
+  alla richiesta successiva di un qualsiasi cliente. Le richieste inserite da te nel gestionale non generano email.
+- Per la notifica sul telefono basta l'app Gmail (o della tua casella) con le notifiche attive.
+
 ## Regole implementate
 - **Mensilità e 36 mesi**:
   - dalla mensilità indicata in `settings.loyalty_warning_from` (34) compare l'avviso;
@@ -156,7 +176,9 @@ Senza questi segreti le email non partono, ma badge e avvisi nella dashboard fun
   - ogni applicazione viene annotata nel registro del cliente.
   - Soglie e tariffe si cambiano nella tabella `settings`.
 - **Modifiche del mese**:
-  - conta i ticket «Modifica inclusa» aperti nel mese solare corrente, con l'ora italiana, esclusi i rifiutati;
+  - conta i ticket «Modifica inclusa» aperti dall'ultimo pagamento registrato (una mensilità conteggiata), esclusi i rifiutati;
+  - ogni rinnovo pagato azzera il contatore; un pagamento fallito o un conguaglio no;
+  - clienti senza pagamenti Stripe: mese solare corrente, con l'ora italiana;
   - quota: 3 per il Completo, 0 per il Base, dove le modifiche sono a pagamento.
 - **Date di chiusura dei ticket**: impostate e azzerate in automatico quando cambia lo stato.
 - **Link ticket del cliente**:
