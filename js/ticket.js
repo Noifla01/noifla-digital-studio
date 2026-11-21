@@ -13,6 +13,11 @@
   var CAT = { modifica_inclusa: 'Modifica inclusa', extra_preventivo: 'Extra / preventivo', bug_assistenza: 'Assistenza' };
   var df = new Intl.DateTimeFormat('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Rome' });
   var data = null;
+  var dfDay = new Intl.DateTimeFormat('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric', timeZone: 'Europe/Rome' });
+  // le modifiche ripartono a ogni pagamento; senza pagamenti registrati valgono per il mese solare
+  function periodText(d) {
+    return d.changes_period === 'pagamento' && d.changes_since ? 'dal pagamento del ' + dfDay.format(new Date(d.changes_since)) : 'questo mese';
+  }
 
   function el(tag, cls, text) { var n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; }
   function badge(text, tone) { return el('span', 'adm-badge adm-badge--' + tone, text); }
@@ -43,7 +48,7 @@
     b.appendChild(badge(d.plan === 'piano_completo' ? 'Piano Completo' : 'Piano Base', 'info'));
     if (d.plan === 'piano_completo') {
       var used = d.changes_used, q = d.changes_quota;
-      b.appendChild(badge('Modifiche incluse questo mese: ' + used + '/' + q, used >= q ? 'bad' : used === q - 1 ? 'warn' : 'ok'));
+      b.appendChild(badge('Modifiche incluse ' + periodText(d) + ': ' + used + '/' + q, used >= q ? 'bad' : used === q - 1 ? 'warn' : 'ok'));
     } else {
       b.appendChild(badge('Modifiche a parte: 20€/ora', 'muted'));
     }
@@ -77,7 +82,7 @@
     var msg = '';
     if (data && kind === 'modifica') {
       if (data.plan !== 'piano_completo') msg = 'Con il Piano Base le modifiche si pagano a parte, 20€/ora.';
-      else if (data.changes_used >= data.changes_quota) msg = 'Hai già usato le ' + data.changes_quota + ' modifiche incluse questo mese: questa verrà valutata come extra, ti avvisiamo prima di procedere.';
+      else if (data.changes_used >= data.changes_quota) msg = 'Hai già usato le ' + data.changes_quota + ' modifiche incluse ' + periodText(data) + ': questa verrà valutata come extra, ti avvisiamo prima di procedere. Il contatore riparte con il prossimo pagamento.';
     }
     if (kind === 'nuova_funzionalita') msg = 'Le nuove funzionalità non sono incluse nel piano: ti mandiamo un preventivo prima di iniziare.';
     n.textContent = msg; n.hidden = !msg;
