@@ -292,6 +292,10 @@ deno_version = 2
 [functions.stripe-webhook]
 verify_jwt = false
 
+# Chiamata dall'area clienti (senza login): accetta solo un codice cliente valido.
+[functions.ticket-notify]
+verify_jwt = false
+
 # Chiamata dal gestionale con il login dell'admin.
 [functions.apply-loyalty-price]
 verify_jwt = true

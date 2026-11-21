@@ -89,6 +89,17 @@
   }
   Array.prototype.forEach.call(document.querySelectorAll('input[name="kind"]'), function (r) { r.addEventListener('change', updateQuotaNote); });
 
+  // avvisa Noifla via email della nuova richiesta; se non riesce, l'avviso parte al prossimo invio
+  function notifyNewTicket() {
+    try {
+      fetch(cfg.supabaseUrl.replace(/\/$/, '') + '/functions/v1/ticket-notify', {
+        method: 'POST', keepalive: true,
+        headers: { apikey: cfg.supabaseAnonKey, Authorization: 'Bearer ' + cfg.supabaseAnonKey, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: token })
+      }).catch(function () {});
+    } catch (e) { /* nessun avviso: la richiesta è comunque salvata */ }
+  }
+
   function formError(msg) { var e = $('#tkError'); e.textContent = msg || ''; e.hidden = !msg; }
   $('#tkForm').addEventListener('submit', function (ev) {
     ev.preventDefault();
@@ -105,6 +116,7 @@
       $('#tkTitle').value = ''; $('#tkDesc').value = '';
       render(d);
       toast('Richiesta inviata. Grazie!');
+      notifyNewTicket();
     }, function (e) {
       if (e.invalid) invalid(); else formError(e.message);
     }).then(function () { btn.disabled = false; });
