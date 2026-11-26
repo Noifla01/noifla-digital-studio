@@ -466,6 +466,18 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 }
 .perks li { display: flex; align-items: center; gap: 8px; white-space: nowrap; }
 .perks svg { width: 18px; height: 18px; flex: none; fill: none; stroke: var(--accent); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+/* promo «Porta un amico» */
+.refer {
+  display: flex; align-items: center; gap: 16px; margin-top: 14px; padding: 16px 20px;
+  border: 1px dashed var(--accent); border-radius: 18px; background: rgba(46, 229, 157, .06);
+}
+.refer__icon { width: 34px; height: 34px; flex: none; fill: none; stroke: var(--accent); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.refer__text { flex: 1; min-width: 0; }
+.refer__title { font-size: 16.5px; font-weight: 500; letter-spacing: -0.01em; margin-bottom: 2px; }
+.refer__text p { font-size: 14px; color: var(--muted); line-height: 1.45; }
+.refer__link { flex: none; font-size: 14px; color: var(--accent); }
+.field__upper { text-transform: uppercase; }
+.field__upper::placeholder { text-transform: none; }
 .plans__foot { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 6px 24px; margin-top: 12px; font-size: 13px; color: var(--muted); }
 .extras strong { color: var(--ink); font-weight: 500; margin-right: 6px; }
 .extras span + span::before { content: "·"; margin: 0 8px; }
@@ -504,6 +516,10 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   .plan__list { font-size: 14.5px; gap: 6px; margin-bottom: 14px; }
   .plan__cta.pill--lg { height: 44px; padding: 0 20px; font-size: 15px; }
   .plans__foot { font-size: 12.5px; }
+  .refer { flex-wrap: wrap; align-items: flex-start; padding: 14px 16px; gap: 10px 12px; }
+  .refer__icon { width: 26px; height: 26px; }
+  .refer__text { flex-basis: calc(100% - 40px); }
+  .refer__link { margin-left: 38px; }
   .plans__dots { display: flex; justify-content: center; gap: 6px; margin-top: 12px; }
   .plans__dots i { width: 6px; height: 6px; border-radius: 99px; background: var(--pill-line); transition: width .3s var(--ease), background .3s; }
   .plans__dots i.is-active { width: 18px; background: var(--accent); }

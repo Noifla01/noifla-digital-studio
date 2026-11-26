@@ -5,7 +5,7 @@
   'use strict';
 
   var N = window.NOIFLA;
-  var WA_NUMBER = '390000000000'; // TODO: numero WhatsApp reale (formato internazionale, senza +)
+  var WA_NUMBER = '393522230127'; // WhatsApp Business (formato internazionale, senza +)
   var CONSENT_KEY = 'noifla_cookie_consent';
   var reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   var finePointer = matchMedia('(hover: hover) and (pointer: fine)').matches;
@@ -296,6 +296,14 @@
       if (m) m.show();
       else window.open('https://wa.me/' + WA_NUMBER, '_blank', 'noopener');
     });
+    // promo «Porta un amico»: il link dell'amico (?amico=CODICE) precompila il codice
+    var amico = $('#cAmico'), refCode = '';
+    try {
+      refCode = (new URLSearchParams(location.search).get('amico') || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 12);
+      if (refCode) sessionStorage.setItem('noifla_amico', refCode);
+      else refCode = sessionStorage.getItem('noifla_amico') || '';
+    } catch (err) { /* senza storage il codice vale solo per questa pagina */ }
+    if (amico && refCode) amico.value = refCode;
     el.addEventListener('shown.bs.modal', function () { $('#cNome').focus(); });
     form.addEventListener('submit', function (e) {
       e.preventDefault();
@@ -305,9 +313,12 @@
         return;
       }
       var v = function (id) { return $(id).value.trim(); };
-      var testo = 'Ciao Noifla! Sono ' + v('#cNome') + '. Vorrei un preventivo e la prima bozza del sito. Recapito: ' + v('#cContatto') + '. ' + v('#cMsg');
+      var code = amico ? amico.value.toUpperCase().replace(/[^A-Z0-9]/g, '') : '';
+      var testo = 'Ciao Noifla! Sono ' + v('#cNome') + '. Vorrei un preventivo e la prima bozza del sito. Recapito: ' + v('#cContatto') + '. ' +
+        (code ? 'Codice amico: ' + code + '. ' : '') + v('#cMsg');
       window.open('https://wa.me/' + WA_NUMBER + '?text=' + encodeURIComponent(testo), '_blank', 'noopener');
       form.reset(); form.classList.remove('was-validated');
+      if (amico && refCode) amico.value = refCode;
       var m = getModal(); if (m) m.hide();
     });
   })();

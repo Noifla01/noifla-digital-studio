@@ -55,6 +55,7 @@
     $('#tkForm').hidden = !d.can_open;
     $('#tkClosed').hidden = d.can_open;
     updateQuotaNote();
+    renderReferral(d.referral);
 
     var list = $('#tkList'); list.textContent = '';
     if (!d.tickets.length) list.appendChild(el('li', 'adm-muted', 'Non hai ancora inviato richieste.'));
@@ -74,6 +75,29 @@
       li.appendChild(meta); li.appendChild(row);
       list.appendChild(li);
     });
+  }
+
+  // promo «Porta un amico»: codice personale e link da girare all'amico.
+  // Il link punta al sito pubblico (non a questa pagina) e non contiene il codice dell'area clienti.
+  function renderReferral(r) {
+    var box = $('#tkRef');
+    box.hidden = !(r && r.enabled && r.code);
+    if (box.hidden) return;
+    var link = new URL('./?amico=' + encodeURIComponent(r.code) + '#prezzi', location.href).href;
+    $('#tkRefCode').textContent = r.code;
+    var s = $('#tkRefStats'); s.textContent = '';
+    s.appendChild(badge(r.friends + (r.friends === 1 ? ' amico presentato' : ' amici presentati'), r.friends ? 'ok' : 'muted'));
+    if (r.months_applied) s.appendChild(badge(r.months_applied + (r.months_applied === 1 ? ' mese gratis ricevuto' : ' mesi gratis ricevuti'), 'ok'));
+    if (r.pending) s.appendChild(badge(r.pending + (r.pending === 1 ? ' premio in arrivo' : ' premi in arrivo'), 'info'));
+    if (r.friends < r.gift_at) s.appendChild(badge('Targhetta in regalo tra ' + (r.gift_at - r.friends) + (r.gift_at - r.friends === 1 ? ' amico' : ' amici'), 'muted'));
+    var msg = 'Ciao! Per il sito della mia attività mi trovo bene con Noifla Digital Studio. Se lo fai anche tu, con il mio codice ' +
+      r.code + ' abbiamo un mese gratis a testa: ' + link;
+    $('#tkRefShare').href = 'https://wa.me/?text=' + encodeURIComponent(msg);
+    $('#tkRefCopy').onclick = function () {
+      (navigator.clipboard ? navigator.clipboard.writeText(link) : Promise.reject()).then(
+        function () { toast('Link copiato: mandalo al tuo amico'); },
+        function () { window.prompt('Copia questo link:', link); });
+    };
   }
 
   // avviso sotto la scelta del tipo: cosa succede a questa richiesta
