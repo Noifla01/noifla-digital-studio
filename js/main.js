@@ -5,7 +5,7 @@
   'use strict';
 
   var N = window.NOIFLA;
-  var WA_NUMBER = '390000000000'; // TODO: numero WhatsApp reale (formato internazionale, senza +)
+  var WA_NUMBER = '393522230127'; // WhatsApp Business (formato internazionale, senza +)
   var CONSENT_KEY = 'noifla_cookie_consent';
   var reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   var finePointer = matchMedia('(hover: hover) and (pointer: fine)').matches;
