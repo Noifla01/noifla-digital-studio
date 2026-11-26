@@ -342,6 +342,7 @@
     fillForm(state.current);
     renderDrawerHead();
     setSub(sub || 'data');
+    $('#clientDrawer .offcanvas-body').scrollTop = 0;   // ogni scheda si apre dall'inizio, con le linguette in vista
     getDrawer().show();
     if (state.current) { loadNotes(); loadClientTickets(); loadPayments(); loadReferral(); }
   }
@@ -536,7 +537,7 @@
     sum.appendChild(el('span', { class: 'adm-muted', text: 'Codice amico:' }));
     sum.appendChild(badge(c.referral_code || '–', 'info'));
     sum.appendChild(badge((c.referral_friends || 0) + ((c.referral_friends || 0) === 1 ? ' amico presentato' : ' amici presentati'), 'muted'));
-    sum.appendChild(badge((c.referral_months_applied || 0) + ' mesi gratis ricevuti', 'ok'));
+    sum.appendChild(badge((c.referral_months_applied || 0) + ((c.referral_months_applied || 0) === 1 ? ' mese gratis ricevuto' : ' mesi gratis ricevuti'), 'ok'));
     if (c.referred_by_name) sum.appendChild(badge('Presentato da ' + c.referred_by_name, 'muted'));
 
     var list = $('#rewardList'); list.textContent = '';
