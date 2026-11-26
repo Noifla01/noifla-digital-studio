@@ -12,7 +12,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&display=swap">
   <link rel="stylesheet" href="css/style.css?v=7">
-  <link rel="stylesheet" href="css/admin.css?v=3">
+  <link rel="stylesheet" href="css/admin.css?v=4">
 </head>
 <body class="adm">
 
@@ -57,6 +57,7 @@
     </section>
 
     <p class="adm-alert" id="orphanBox" role="status" hidden></p>
+    <p class="adm-alert" id="referralBox" role="status" hidden></p>
 
     <!-- clienti -->
     <section id="paneClients" role="tabpanel" aria-label="Clienti">
@@ -124,6 +125,7 @@
       <button type="button" role="tab" aria-selected="false" data-sub="notes">Note e accordi</button>
       <button type="button" role="tab" aria-selected="false" data-sub="tickets">Ticket</button>
       <button type="button" role="tab" aria-selected="false" data-sub="payments">Pagamenti</button>
+      <button type="button" role="tab" aria-selected="false" data-sub="referral">Porta un amico</button>
     </nav>
 
     <!-- dati -->
@@ -141,7 +143,10 @@
         <div class="field"><label for="fStatus">Stato abbonamento</label><select id="fStatus" name="subscription_status"><option value="attivo">Attivo</option><option value="in_rinnovo">In rinnovo</option><option value="scaduto">Scaduto</option></select></div>
         <div class="field"><label for="fStripeC">Stripe customer ID</label><input id="fStripeC" name="stripe_customer_id" placeholder="cus_…"></div>
         <div class="field"><label for="fStripeS">Stripe subscription ID</label><input id="fStripeS" name="stripe_subscription_id" placeholder="sub_…"></div>
+        <div class="field"><label for="fReferrer">Presentato da (codice amico)</label><input id="fReferrer" name="referrer_code" maxlength="12" autocomplete="off" placeholder="Es. K7M2QX" class="adm-upper"></div>
+        <div class="field"><label for="fOwnCode">Il suo codice amico</label><input id="fOwnCode" readonly placeholder="creato al salvataggio"></div>
       </div>
+      <p class="adm-hint" id="referrerHint" hidden></p>
       <p class="adm-hint">Con Stripe collegato, mensilità, stato, ultimo pagamento e tariffa si aggiornano da soli. Inserisci il customer ID appena crei il cliente su Stripe.</p>
       <p class="adm-error" id="clientError" role="alert" hidden></p>
       <div class="adm-actions">
@@ -189,6 +194,16 @@
     <div class="adm-sub" data-pane="payments" hidden>
       <ol class="adm-log" id="paymentList"></ol>
     </div>
+
+    <!-- porta un amico -->
+    <div class="adm-sub" data-pane="referral" hidden>
+      <div class="adm-quota" id="referralSummary"></div>
+      <p class="adm-hint">I mesi gratis diventano un credito sul saldo Stripe del cliente e scalano la fattura successiva. Il webhook li accredita da solo dopo un pagamento, solo a chi è collegato a Stripe e in regola. La targhetta va consegnata a mano.</p>
+      <h3 class="adm-h3">Premi</h3>
+      <ol class="adm-log" id="rewardList"></ol>
+      <h3 class="adm-h3">Amici presentati</h3>
+      <ol class="adm-log" id="friendList"></ol>
+    </div>
   </div>
 </div>
 
@@ -197,6 +212,6 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js" integrity="sha256-hZaWX+kY5lZgChtWjToWj1wNPSKmAIhrtvRKZVXbAec=" crossorigin="anonymous"></script>
 <script src="js/supabase-config.js"></script>
-<script src="js/admin.js?v=5"></script>
+<script src="js/admin.js?v=6"></script>
 </body>
 </html>

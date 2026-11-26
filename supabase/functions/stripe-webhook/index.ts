@@ -8,11 +8,13 @@
 //
 // Eventi gestiti: invoice.paid, invoice.payment_failed,
 //                 customer.subscription.updated, customer.subscription.deleted
+// Dopo ogni invoice.paid accredita anche i mesi gratis della promo «Porta un amico».
 
 import Stripe from 'npm:stripe@17.7.0';
 import { createClient } from 'npm:@supabase/supabase-js@2.45.4';
 import { handleStripeEvent } from './handler.js';
 import { notifyLoyalty, resendSender } from './notify.js';
+import { applyReferralCredits } from './referral.js';
 
 // avvisi email per i 36 mesi (facoltativi): RESEND_API_KEY, MAIL_FROM, ADMIN_EMAIL, ADMIN_URL
 const resendKey = Deno.env.get('RESEND_API_KEY') ?? '';
@@ -57,6 +59,17 @@ Deno.serve(async (req) => {
   try {
     const result = await handleStripeEvent(event, rpc);
     console.log(event.type, event.id, '→', result);
+
+    // promo «Porta un amico»: dopo un pagamento accredita su Stripe i mesi gratis pronti
+    // (anche quelli nati da questo pagamento). Un errore qui non fa ripetere l'evento:
+    // i premi restano in coda e si ritentano al prossimo pagamento.
+    if (event.type === 'invoice.paid') {
+      try {
+        console.log('porta un amico:', await applyReferralCredits(rpc, stripe));
+      } catch (err) {
+        console.error('porta un amico non accreditato:', (err as Error).message);
+      }
+    }
 
     // dopo un pagamento le mensilità possono essere salite: avvisa l'admin se qualcuno
     // è entrato nella fase "in arrivo" (34ª) o "da applicare" (36ª). Un errore qui non

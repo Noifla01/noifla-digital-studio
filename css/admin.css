@@ -129,3 +129,11 @@ select.adm-input { appearance: auto; }
 .tk-history { display: grid; gap: 12px; }
 @media (max-width: 575.98px) { .tk-kinds { grid-template-columns: 1fr; } }
 .adm-log__ctl { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 6px; flex: none; }
+
+/* promo «Porta un amico» */
+.adm-h3 { font-size: 16px; font-weight: 500; margin: 20px 0 8px; }
+.adm-upper { text-transform: uppercase; }
+.tk-ref { gap: 12px; }
+.tk-ref__code { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.tk-ref__code strong { font-size: 28px; font-weight: 500; letter-spacing: .12em; padding: 6px 14px; border: 1px dashed var(--accent); border-radius: 12px; color: var(--accent); }
+.tk-ref__actions { display: flex; flex-wrap: wrap; gap: 8px; }

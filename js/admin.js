@@ -14,8 +14,15 @@
     pay: { pagato: 'Pagato', fallito: 'Fallito', in_attesa: 'In attesa' },
     cat: { modifica_inclusa: 'Modifica inclusa', extra_preventivo: 'Extra / preventivo', bug_assistenza: 'Bug / assistenza' },
     status: { aperto: 'Aperto', in_lavorazione: 'In lavorazione', completato: 'Completato', rifiutato_extra: 'Rifiutato / extra' },
-    note: { intervista: 'Intervista iniziale', accordo: 'Accordo', specifica: 'Specifica', altro: 'Altro' }
+    note: { intervista: 'Intervista iniziale', accordo: 'Accordo', specifica: 'Specifica', altro: 'Altro' },
+    reward: { mese_amico: 'Mese gratis di benvenuto', mese_presentatore: 'Mese gratis per un amico presentato', targhetta: 'Targhetta recensioni in regalo' }
   };
+  // stato del premio: la targhetta si consegna a mano, i mesi si accreditano su Stripe
+  function rewardStatus(r) {
+    if (r.status === 'annullato') return ['Annullato', 'muted'];
+    if (r.kind === 'targhetta') return r.status === 'applicato' ? ['Consegnata', 'ok'] : ['Da consegnare', 'warn'];
+    return r.status === 'applicato' ? ['Accreditato', 'ok'] : ['In attesa di accredito', 'warn'];
+  }
   var TONE = {
     sub: { attivo: 'ok', in_rinnovo: 'bad', scaduto: 'muted' },
     pay: { pagato: 'ok', fallito: 'bad', in_attesa: 'warn' },
@@ -111,10 +118,31 @@
     box.textContent = list.length + (list.length === 1 ? ' pagamento Stripe non è collegato' : ' pagamenti Stripe non sono collegati') +
       ' a nessun cliente (customer: ' + (ids.join(', ') || '–') + '). Inserisci il customer ID nella scheda del cliente: verranno collegati e conteggiati.';
   }
+  // premi «Porta un amico» ancora da gestire: targhette da consegnare e mesi non accreditati
+  async function loadPendingRewards() {
+    var r = await sb.from('referral_rewards').select('id, kind, beneficiary_id').eq('status', 'da_applicare');
+    state.pendingRewards = r.error ? [] : (r.data || []);   // senza la migrazione della promo la dashboard funziona lo stesso
+  }
+  function renderPendingRewards() {
+    var box = $('#referralBox'), list = state.pendingRewards || [];
+    box.textContent = '';
+    box.hidden = !list.length;
+    if (!list.length) return;
+    var plates = list.filter(function (r) { return r.kind === 'targhetta'; });
+    var months = list.length - plates.length;
+    var parts = [];
+    if (plates.length) parts.push(plates.length + (plates.length === 1 ? ' targhetta da consegnare' : ' targhette da consegnare'));
+    if (months) parts.push(months + (months === 1 ? ' mese gratis in attesa di accredito' : ' mesi gratis in attesa di accredito'));
+    box.appendChild(document.createTextNode('Porta un amico: ' + parts.join(' e ') + '. '));
+    var names = list.map(function (r) { var c = clientById(r.beneficiary_id); return c ? c.business_name : null; })
+      .filter(function (v, i, a) { return v && a.indexOf(v) === i; });
+    if (names.length) box.appendChild(document.createTextNode('Clienti: ' + names.join(', ') + '. '));
+    if (months) box.appendChild(document.createTextNode('I mesi si accreditano da soli al prossimo pagamento, se il cliente è collegato a Stripe e in regola.'));
+  }
   async function refreshAll() {
-    try { await Promise.all([loadClients(), loadTickets(), loadOrphans()]); }
+    try { await Promise.all([loadClients(), loadTickets(), loadOrphans(), loadPendingRewards()]); }
     catch (e) { toast('Impossibile caricare i dati: ' + errText(e), true); return; }
-    renderStats(); renderOrphans(); renderClients(); renderTicketFilters(); renderTickets();
+    renderStats(); renderOrphans(); renderPendingRewards(); renderClients(); renderTicketFilters(); renderTickets();
     if (state.current) {
       var fresh = clientById(state.current.id);
       if (fresh) { state.current = fresh; renderDrawerHead(); }
@@ -272,6 +300,11 @@
       if (!c && k === 'paid_months_count') v = 0;
       f.elements[k].value = v == null ? '' : v;
     });
+    f.elements.referrer_code.value = (c && c.referred_by_code) || '';
+    $('#fOwnCode').value = (c && c.referral_code) || '';
+    var hint = $('#referrerHint');
+    hint.hidden = !(c && c.referred_by_name);
+    hint.textContent = c && c.referred_by_name ? 'Presentato da ' + c.referred_by_name + '. Al suo primo canone ricevono un mese gratis a testa.' : '';
     clientError('');
     $('#tokenBox').hidden = true;
     $('#tokenBtn').hidden = !c;
@@ -310,7 +343,7 @@
     renderDrawerHead();
     setSub(sub || 'data');
     getDrawer().show();
-    if (state.current) { loadNotes(); loadClientTickets(); loadPayments(); }
+    if (state.current) { loadNotes(); loadClientTickets(); loadPayments(); loadReferral(); }
   }
   $('#newClientBtn').addEventListener('click', function () { openClient(null); });
   $('#clientDrawer').addEventListener('hidden.bs.offcanvas', function () { state.current = null; });
@@ -334,11 +367,27 @@
     var r = state.current
       ? await sb.from('clients').update(data).eq('id', state.current.id).select('id').single()
       : await sb.from('clients').insert(data).select('id').single();
+    if (r.error) { btn.disabled = false; clientError(errText(r.error)); return; }
+    // presentatore (promo «Porta un amico»): si collega dal codice amico, con i controlli nel database
+    var code = f.elements.referrer_code.value.trim().toUpperCase();
+    var oldCode = (state.current && state.current.referred_by_code) || '';
+    var refMsg = '';
+    if (code !== oldCode) {
+      var rr = await sb.rpc('set_client_referrer', { p_client_id: r.data.id, p_code: code });
+      if (rr.error) {
+        btn.disabled = false;
+        await refreshAll();
+        if (!state.current) await openClient(r.data.id);
+        clientError('Dati salvati, ma il presentatore non è stato collegato: ' + errText(rr.error));
+        return;
+      }
+      refMsg = rr.data ? ' · presentato da ' + rr.data : ' · presentatore tolto';
+    }
     btn.disabled = false;
-    if (r.error) { clientError(errText(r.error)); return; }
-    toast(state.current ? 'Cliente aggiornato' : 'Cliente creato');
+    toast((state.current ? 'Cliente aggiornato' : 'Cliente creato') + refMsg);
     await refreshAll();
-    if (!state.current) openClient(r.data.id);
+    if (state.current) fillForm(state.current);
+    else openClient(r.data.id);
   });
 
   /* link ticket */
@@ -467,6 +516,66 @@
           el('span', { text: (p.amount_cents / 100).toLocaleString('it-IT', { style: 'currency', currency: (p.currency || 'eur').toUpperCase() }) }),
           el('span', { class: 'adm-muted', text: p.period_start ? fmtDate(p.period_start) + ' → ' + fmtDate(p.period_end) : p.stripe_invoice_id })
         ])
+      ]));
+    });
+  }
+
+  /* porta un amico */
+  async function setRewardStatus(r, status, label) {
+    var c = clientById(r.beneficiary_id);
+    if (!confirm(label + (c ? ' per ' + c.business_name : '') + '?')) return;
+    var u = await sb.from('referral_rewards').update({ status: status }).eq('id', r.id);
+    if (u.error) { toast(errText(u.error), true); return; }
+    toast('Premio aggiornato');
+    await refreshAll();
+    loadReferral();
+  }
+  async function loadReferral() {
+    var c = state.current; if (!c) return;
+    var sum = $('#referralSummary'); sum.textContent = '';
+    sum.appendChild(el('span', { class: 'adm-muted', text: 'Codice amico:' }));
+    sum.appendChild(badge(c.referral_code || '–', 'info'));
+    sum.appendChild(badge((c.referral_friends || 0) + ((c.referral_friends || 0) === 1 ? ' amico presentato' : ' amici presentati'), 'muted'));
+    sum.appendChild(badge((c.referral_months_applied || 0) + ' mesi gratis ricevuti', 'ok'));
+    if (c.referred_by_name) sum.appendChild(badge('Presentato da ' + c.referred_by_name, 'muted'));
+
+    var list = $('#rewardList'); list.textContent = '';
+    var r = await sb.from('referral_rewards').select('*').eq('beneficiary_id', c.id).order('created_at', { ascending: false });
+    if (r.error) { list.appendChild(el('li', { class: 'adm-error', text: errText(r.error) })); }
+    else {
+      if (!r.data.length) list.appendChild(el('li', { class: 'adm-muted', text: 'Nessun premio. Arrivano quando un amico presentato paga il primo canone.' }));
+      r.data.forEach(function (w) {
+        var st = rewardStatus(w), ctl = el('div', { class: 'adm-log__ctl' });
+        if (w.status === 'da_applicare') {
+          var done = el('button', { class: 'pill', type: 'button', text: w.kind === 'targhetta' ? 'Segna consegnata' : 'Accreditato a mano' });
+          done.addEventListener('click', function () {
+            setRewardStatus(w, 'applicato', w.kind === 'targhetta' ? 'Segnare la targhetta come consegnata'
+              : 'Segnare il mese come già accreditato a mano su Stripe (il webhook non lo accrediterà più)');
+          });
+          var cancel = el('button', { class: 'pill', type: 'button', text: 'Annulla' });
+          cancel.addEventListener('click', function () { setRewardStatus(w, 'annullato', 'Annullare questo premio'); });
+          ctl.appendChild(done); ctl.appendChild(cancel);
+        }
+        list.appendChild(el('li', { class: 'adm-log__item' }, [
+          el('div', { class: 'adm-log__meta' }, [badge(st[0], st[1]), el('time', { text: fmtTime(w.applied_at || w.created_at) }),
+            w.amount_cents ? el('span', { text: euro(w.amount_cents / 100) }) : null]),
+          el('div', { class: 'adm-log__row' }, [
+            el('div', null, [el('strong', { text: LABEL.reward[w.kind] }), w.note ? el('p', { class: 'adm-muted', text: w.note }) : null]),
+            ctl
+          ])
+        ]));
+      });
+    }
+
+    var fl = $('#friendList'); fl.textContent = '';
+    var friends = state.clients.filter(function (x) { return x.referred_by === c.id; });
+    if (!friends.length) fl.appendChild(el('li', { class: 'adm-muted', text: 'Nessun amico presentato.' }));
+    friends.forEach(function (x) {
+      var name = el('button', { class: 'adm-link', type: 'button', text: x.business_name });
+      name.addEventListener('click', function () { openClient(x.id, 'referral'); });
+      fl.appendChild(el('li', { class: 'adm-log__item' }, [
+        el('div', { class: 'adm-log__row' }, [name, x.paid_months_count >= 1
+          ? badge('Primo canone pagato', 'ok') : badge('In attesa del primo canone', 'warn')])
       ]));
     });
   }

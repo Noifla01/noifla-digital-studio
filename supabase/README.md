@@ -12,6 +12,7 @@ supabase/
   migrations/20261120030000_avvisi_36_mesi.sql  coda degli avvisi email per i 36 mesi
   migrations/20261121000000_modifiche_dal_pagamento.sql  modifiche incluse contate dall'ultimo pagamento
   migrations/20261121010000_avvisi_ticket.sql   coda delle email per le nuove richieste dei clienti
+  migrations/20261126000000_porta_un_amico.sql  promo «Porta un amico»: codici amico e mesi gratis
   functions/stripe-webhook/                     riceve i webhook Stripe e manda gli avvisi email
   functions/apply-loyalty-price/                applica la tariffa ridotta su Stripe e nel database
   functions/ticket-notify/                      email all'admin per ogni nuova richiesta di un cliente
@@ -28,6 +29,7 @@ js/supabase-config.js                           URL e chiave anon del progetto (
 5. **Tariffa ridotta su Stripe** dopo 36 mensilità ed **email di avviso**: fatto
 6. **Modifiche incluse azzerate a ogni pagamento**: fatto
 7. **Email per ogni nuova richiesta** del cliente: fatto
+8. **Promo «Porta un amico»** con mesi gratis accreditati su Stripe: fatto
 
 ## Messa in funzione (passi 1, 2 e 3)
 
@@ -40,7 +42,7 @@ js/supabase-config.js                           URL e chiave anon del progetto (
 - Apri **SQL Editor → New query** ed esegui, nell'ordine, i file di `migrations/`:
   `20261120000000_gestionale.sql`, `20261120010000_portale_clienti.sql`, `20261120020000_stripe.sql`,
   `20261120030000_avvisi_36_mesi.sql`, `20261121000000_modifiche_dal_pagamento.sql`,
-  `20261121010000_avvisi_ticket.sql`.
+  `20261121010000_avvisi_ticket.sql`, `20261126000000_porta_un_amico.sql`.
 - In alternativa, con la Supabase CLI: `supabase link` e poi `supabase db push`.
 
 ### 3. Crea il tuo utente admin
@@ -167,6 +169,37 @@ supabase functions deploy ticket-notify --no-verify-jwt
 - Un'email per richiesta, una volta sola. Se l'invio fallisce, la richiesta resta in coda e parte
   alla richiesta successiva di un qualsiasi cliente. Le richieste inserite da te nel gestionale non generano email.
 - Per la notifica sul telefono basta l'app Gmail (o della tua casella) con le notifiche attive.
+
+## Promo «Porta un amico» (passo 8)
+Regolamento pubblico: `porta-un-amico.html`. Per attivarla:
+1. Esegui `migrations/20261126000000_porta_un_amico.sql` (dopo le altre).
+   Ogni cliente, anche quelli già presenti, riceve un **codice amico** di 6 caratteri.
+2. Ripubblica il webhook, che ora accredita anche i mesi gratis:
+   ```bash
+   supabase functions deploy stripe-webhook --no-verify-jwt
+   ```
+   Non servono segreti nuovi: usa la stessa `STRIPE_SECRET_KEY`.
+
+Come si usa:
+- Il nuovo cliente scrive il codice amico nel modulo del sito: arriva nel messaggio WhatsApp.
+  Il link che il cliente gira all'amico dall'area clienti (`?amico=CODICE`) lo precompila.
+- Nella scheda del nuovo cliente, campo **Presentato da (codice amico)**: inserisci il codice e salva.
+  Si può fare finché il cliente ha pagato al massimo il primo canone.
+- Quando il nuovo cliente paga il primo canone vengono creati i premi:
+  - **mese gratis di benvenuto** per l'amico (scala il secondo canone);
+  - **mese gratis** per chi lo ha presentato, fino a 12 in 12 mesi (`settings.referral_max_months_year`);
+  - al **3° amico** (`settings.referral_gift_at`) una **targhetta recensioni** da consegnare a mano.
+- Dopo ogni pagamento ricevuto, il webhook accredita i mesi gratis pronti come **credito sul saldo Stripe** del cliente.
+  Il credito scala in automatico la fattura successiva, che diventa da 0€.
+  - Riceve il credito solo chi è collegato a Stripe, attivo e senza pagamenti falliti; gli altri restano in attesa.
+  - Chi è scaduto prima dell'accredito perde il premio.
+  - Se il webhook ritenta, non crea un secondo credito: controlla quelli già presenti su Stripe.
+- I mesi gratis **non contano** come mensilità per i 36 mesi, ma **azzerano le modifiche incluse** come un rinnovo.
+- Nella scheda cliente, scheda **Porta un amico**: codice, amici presentati, premi.
+  Puoi segnare una targhetta come consegnata, un mese come accreditato a mano o annullare un premio.
+- La dashboard mostra un avviso quando ci sono targhette da consegnare o mesi in attesa.
+- Per sospendere la promo: `update public.settings set referral_enabled = false;`
+  I premi già creati restano validi.
 
 ## Regole implementate
 - **Mensilità e 36 mesi**:
