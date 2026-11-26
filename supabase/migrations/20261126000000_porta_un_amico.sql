@@ -48,8 +48,9 @@ begin
   return v;
 end $$;
 
+-- security definer: il gestionale (ruolo authenticated) non può chiamare new_referral_code direttamente
 create or replace function public.clients_default_referral_code()
-returns trigger language plpgsql set search_path = '' as $$
+returns trigger language plpgsql security definer set search_path = '' as $$
 begin
   if new.referral_code is null then new.referral_code := public.new_referral_code(); end if;
   return new;
