@@ -649,13 +649,20 @@
         });
         body.appendChild(el('div', { class: 'adm-actions' }, [cancel]));
       } else {
-        var refund = Math.max(open.amount_cents - open.months_used * open.monthly_rate_cents, 0);
-        body.appendChild(el('p', { class: 'adm-muted', text: 'Se disdice oggi: rimborso di ' + euro(refund / 100) +
-          ' (pagato ' + euro(open.amount_cents / 100) + ' meno ' + open.months_used + ' canoni goduti a ' + euro(open.monthly_rate_cents / 100) + ').' }));
-        var close = el('button', { class: 'pill', type: 'button', text: 'Chiudi pacchetto (disdetta)' });
+        // il pacchetto non è rimborsabile: se il cliente disdice, il servizio va avanti fino alla fine
+        var left = total - open.months_used;
+        var ends = open.id === c.package_id ? c.package_ends_at : null;
+        var refund = open.id === c.package_id && c.package_refund_cents != null ? c.package_refund_cents
+          : Math.round(open.amount_cents * left / total);
+        body.appendChild(el('p', { class: 'adm-muted', text: (ends ? 'Fine prevista: ' + fmtDate(ends) + ' · ' : '') +
+          left + (left === 1 ? ' canone rimasto.' : ' canoni rimasti.') + ' Il pacchetto non è rimborsabile: se il cliente disdice, ' +
+          'su Stripe imposta la cancellazione dell\'abbonamento alla fine del pacchetto (' + (ends ? fmtDate(ends) : 'quando il credito finisce') + ').' }));
+        var close = el('button', { class: 'pill', type: 'button', text: 'Chiudi prima della fine' });
         close.addEventListener('click', async function () {
-          var note = prompt('Chiudere il pacchetto di ' + c.business_name + '?\n\nPrima fai su Stripe il rimborso di ' + euro(refund / 100) +
-            ' e azzera il credito residuo del cliente: qui viene solo registrato.\n\nNota (facoltativa):', 'Disdetta, rimborsati ' + euro(refund / 100));
+          var note = prompt('Chiudere il pacchetto di ' + c.business_name + ' prima della fine?\n\n' +
+            '• Risoluzione per inadempimento del cliente (Art. 15): nessun rimborso.\n' +
+            '• Chiudi tu il servizio (recesso o cessazione): rimborso di ' + euro(refund / 100) + ', da fare a mano su Stripe, poi azzera il credito residuo.\n\n' +
+            'Qui viene solo registrato. Nota:', 'Risoluzione Art. 15, nessun rimborso');
           if (note === null) return;
           close.disabled = true;
           try { await callPackage({ action: 'cancel', package_id: open.id, note: note }); await afterPackageChange('Pacchetto chiuso'); }
