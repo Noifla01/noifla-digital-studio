@@ -56,6 +56,7 @@
     $('#tkClosed').hidden = d.can_open;
     updateQuotaNote();
     renderReferral(d.referral);
+    renderPackage(d.package);
 
     var list = $('#tkList'); list.textContent = '';
     if (!d.tickets.length) list.appendChild(el('li', 'adm-muted', 'Non hai ancora inviato richieste.'));
@@ -98,6 +99,38 @@
         function () { toast('Link copiato: mandalo al tuo amico'); },
         function () { window.prompt('Copia questo link:', link); });
     };
+  }
+
+  // pacchetto annuale 12+2: stato del pacchetto o proposta
+  function renderPackage(p) {
+    var box = $('#tkPkg'), text = $('#tkPkgText'), stats = $('#tkPkgStats'), act = $('#tkPkgActions');
+    stats.textContent = ''; act.textContent = '';
+    var total = p ? p.paid_months + p.gift_months : 0;
+    box.hidden = !(p && (p.offer || p.status === 'in_attesa' || p.status === 'pagato' || p.status === 'attivo'));
+    if (box.hidden) return;
+    if (p.status === 'attivo') {
+      text.textContent = 'I tuoi canoni sono già pagati: le fatture mensili sono da 0€ fino alla fine del pacchetto. Poi si torna al pagamento mensile, oppure puoi rinnovare il pacchetto.';
+      stats.appendChild(badge('Mese ' + p.months_used + ' di ' + p.months_total, 'ok'));
+      stats.appendChild(badge((p.months_total - p.months_used) + ' mesi rimasti', 'muted'));
+    } else if (p.status === 'pagato') {
+      text.textContent = 'Pagamento ricevuto, grazie! Stiamo attivando il pacchetto: i prossimi canoni saranno da 0€.';
+    } else if (p.status === 'in_attesa') {
+      text.textContent = 'Ti abbiamo inviato la fattura del pacchetto: ' + p.paid_months + ' canoni pagati in anticipo, ' + total + ' mesi di servizio.';
+      // solo link di pagamento Stripe
+      if (p.invoice_url && /^https:\/\/invoice\.stripe\.com\//.test(p.invoice_url)) {
+        var pay = el('a', 'pill pill--solid', 'Paga la fattura');
+        pay.href = p.invoice_url; pay.target = '_blank'; pay.rel = 'noopener noreferrer';
+        act.appendChild(pay);
+      }
+    } else {
+      text.textContent = 'Paghi in anticipo ' + p.paid_months + ' canoni e il servizio ti copre per ' + total + ' mesi: ' + p.gift_months +
+        ' mesi in regalo. Le modifiche incluse restano le stesse ogni 30 giorni.';
+      var wa = el('a', 'pill pill--solid', 'Lo voglio: scrivici su WhatsApp');
+      wa.href = 'https://wa.me/393522230127?text=' + encodeURIComponent('Ciao Noifla! Sono ' + (data && data.business_name ? data.business_name : 'un vostro cliente') +
+        '. Vorrei passare al pacchetto annuale ' + p.paid_months + '+' + p.gift_months + '.');
+      wa.target = '_blank'; wa.rel = 'noopener';
+      act.appendChild(wa);
+    }
   }
 
   // avviso sotto la scelta del tipo: cosa succede a questa richiesta

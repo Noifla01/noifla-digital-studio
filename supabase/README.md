@@ -13,9 +13,11 @@ supabase/
   migrations/20261121000000_modifiche_dal_pagamento.sql  modifiche incluse contate dall'ultimo pagamento
   migrations/20261121010000_avvisi_ticket.sql   coda delle email per le nuove richieste dei clienti
   migrations/20261126000000_porta_un_amico.sql  promo «Porta un amico»: codici amico e mesi gratis
+  migrations/20261127000000_pacchetto_annuale.sql  pacchetto annuale 12+2: fattura anticipata e credito di 14 canoni
   functions/stripe-webhook/                     riceve i webhook Stripe e manda gli avvisi email
   functions/apply-loyalty-price/                applica la tariffa ridotta su Stripe e nel database
   functions/ticket-notify/                      email all'admin per ogni nuova richiesta di un cliente
+  functions/annual-package/                     crea o annulla la fattura Stripe del pacchetto annuale
 admin.html, css/admin.css, js/admin.js          gestionale
 ticket.html, js/ticket.js                       area clienti: richieste e storico
 js/supabase-config.js                           URL e chiave anon del progetto (usato da entrambe)
@@ -30,6 +32,7 @@ js/supabase-config.js                           URL e chiave anon del progetto (
 6. **Modifiche incluse azzerate a ogni pagamento**: fatto
 7. **Email per ogni nuova richiesta** del cliente: fatto
 8. **Promo «Porta un amico»** con mesi gratis accreditati su Stripe: fatto
+9. **Pacchetto annuale 12+2** con fattura anticipata e credito su Stripe: fatto
 
 ## Messa in funzione (passi 1, 2 e 3)
 
@@ -200,6 +203,41 @@ Come si usa:
 - La dashboard mostra un avviso quando ci sono targhette da consegnare o mesi in attesa.
 - Per sospendere la promo: `update public.settings set referral_enabled = false;`
   I premi già creati restano validi.
+
+## Pacchetto annuale 12+2 (passo 9)
+Il cliente paga in anticipo 12 canoni e riceve 14 canoni di servizio (2 in regalo).
+Per attivarlo:
+1. Esegui `migrations/20261127000000_pacchetto_annuale.sql` (dopo le altre).
+2. Pubblica la nuova funzione e ripubblica il webhook:
+   ```bash
+   supabase functions deploy annual-package
+   supabase functions deploy stripe-webhook --no-verify-jwt
+   ```
+   Non servono segreti nuovi: usano la stessa `STRIPE_SECRET_KEY`.
+   Se usi una chiave con permessi limitati, deve poter scrivere **Invoices**, **Invoice items** e **Customers**.
+
+Come si usa:
+- Il cliente deve avere lo **Stripe customer ID** nella scheda. Può avere già un abbonamento attivo oppure no.
+- Scheda cliente → **Pacchetto annuale** → **Crea fattura del pacchetto**:
+  - la funzione crea su Stripe una fattura da 12 canoni alla tariffa attuale del cliente (Completo 588€, Base 348€),
+    con scadenza a 7 giorni (`settings.package_days_until_due`);
+  - Stripe la manda per email al cliente; nella scheda trovi anche il link di pagamento da girare su WhatsApp.
+- Quando il cliente paga, il webhook carica sul suo **saldo Stripe** un credito pari a 14 canoni
+  (l'importo pagato + 2 canoni in regalo).
+- Le fatture dell'abbonamento diventano da **0€** finché il credito basta.
+  - **Cliente nuovo**: crea l'abbonamento su Stripe **dopo** il pagamento del pacchetto, così anche la prima fattura è da 0€.
+  - Ogni rinnovo da 0€ consuma un mese del pacchetto: i primi 12 **contano** come mensilità pagate per i 36 mesi,
+    gli ultimi 2 sono in regalo e **non contano**.
+  - Le **modifiche incluse** ripartono a ogni rinnovo, come sempre: 3 ogni 30 giorni, non 42 tutte insieme.
+  - Finiti i 14 mesi, l'abbonamento torna da solo al pagamento mensile. Il cliente può comprare un nuovo pacchetto.
+- Un solo pacchetto aperto per cliente.
+- **Annullare la fattura** non pagata: pulsante nella scheda, la annulla anche su Stripe.
+- **Disdetta durante il pacchetto**: la scheda mostra il **rimborso** dovuto
+  (importo pagato meno i canoni già goduti a prezzo pieno, minimo 0€). Il rimborso e l'azzeramento del credito
+  residuo si fanno **a mano su Stripe**; poi premi **Chiudi pacchetto** per registrarlo.
+- Se nello stesso periodo il cliente ha anche un mese gratis «Porta un amico», i rinnovi da 0€ si attribuiscono prima
+  al pacchetto: il conteggio delle mensilità resta giusto, il pacchetto risulta finito un mese prima.
+- Per sospendere l'offerta: `update public.settings set package_enabled = false;` I pacchetti già pagati restano validi.
 
 ## Regole implementate
 - **Mensilità e 36 mesi**:

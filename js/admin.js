@@ -15,6 +15,7 @@
     cat: { modifica_inclusa: 'Modifica inclusa', extra_preventivo: 'Extra / preventivo', bug_assistenza: 'Bug / assistenza' },
     status: { aperto: 'Aperto', in_lavorazione: 'In lavorazione', completato: 'Completato', rifiutato_extra: 'Rifiutato / extra' },
     note: { intervista: 'Intervista iniziale', accordo: 'Accordo', specifica: 'Specifica', altro: 'Altro' },
+    pkg: { in_attesa: 'Fattura inviata, da pagare', pagato: 'Pagato, credito in caricamento', attivo: 'Attivo', concluso: 'Concluso', annullato: 'Annullato' },
     reward: { mese_amico: 'Mese gratis di benvenuto', mese_presentatore: 'Mese gratis per un amico presentato', targhetta: 'Targhetta recensioni in regalo' }
   };
   // stato del premio: la targhetta si consegna a mano, i mesi si accreditano su Stripe
@@ -26,7 +27,8 @@
   var TONE = {
     sub: { attivo: 'ok', in_rinnovo: 'bad', scaduto: 'muted' },
     pay: { pagato: 'ok', fallito: 'bad', in_attesa: 'warn' },
-    status: { aperto: 'info', in_lavorazione: 'warn', completato: 'ok', rifiutato_extra: 'muted' }
+    status: { aperto: 'info', in_lavorazione: 'warn', completato: 'ok', rifiutato_extra: 'muted' },
+    pkg: { in_attesa: 'warn', pagato: 'info', attivo: 'ok', concluso: 'muted', annullato: 'muted' }
   };
 
   /* ---------- utilità ---------- */
@@ -322,6 +324,8 @@
     if (c.last_payment_status) b.appendChild(badge('Ultimo pagamento: ' + LABEL.pay[c.last_payment_status], TONE.pay[c.last_payment_status]));
     b.appendChild(badge(c.paid_months_count + ' mensilità pagate', 'muted'));
     b.appendChild(quotaBadge(c));
+    if (c.package_status === 'attivo') b.appendChild(badge('Pacchetto annuale: mese ' + c.package_months_used + ' di ' + c.package_months_total, 'info'));
+    if (c.package_status === 'in_attesa') b.appendChild(badge('Pacchetto annuale da pagare', 'warn'));
     if (c.loyalty_state === 'in_arrivo' || c.loyalty_state === 'da_applicare') {
       box.hidden = false;
       box.classList.toggle('adm-alert--strong', c.loyalty_state === 'da_applicare');
@@ -344,7 +348,7 @@
     setSub(sub || 'data');
     $('#clientDrawer .offcanvas-body').scrollTop = 0;   // ogni scheda si apre dall'inizio, con le linguette in vista
     getDrawer().show();
-    if (state.current) { loadNotes(); loadClientTickets(); loadPayments(); loadReferral(); }
+    if (state.current) { loadNotes(); loadClientTickets(); loadPayments(); loadReferral(); loadPackage(); }
   }
   $('#newClientBtn').addEventListener('click', function () { openClient(null); });
   $('#clientDrawer').addEventListener('hidden.bs.offcanvas', function () { state.current = null; });
@@ -577,6 +581,122 @@
       fl.appendChild(el('li', { class: 'adm-log__item' }, [
         el('div', { class: 'adm-log__row' }, [name, x.paid_months_count >= 1
           ? badge('Primo canone pagato', 'ok') : badge('In attesa del primo canone', 'warn')])
+      ]));
+    });
+  }
+
+  /* pacchetto annuale 12+2 */
+  // chiama la funzione lato server annual-package (crea o annulla la fattura su Stripe)
+  async function callPackage(body) {
+    var r = await sb.functions.invoke('annual-package', { body: body });
+    if (!r.error) return r.data;
+    var data = null;
+    try { data = r.error.context && typeof r.error.context.json === 'function' ? await r.error.context.json() : null; } catch (e) { data = null; }
+    var notDeployed = r.error.name === 'FunctionsFetchError' || (r.error.context && r.error.context.status === 404);
+    throw new Error(notDeployed ? 'La funzione annual-package non è raggiungibile: pubblicala (supabase/README.md, passo 9).'
+      : (data && data.error) || errText(r.error));
+  }
+  async function afterPackageChange(msg) {
+    toast(msg);
+    var id = state.current && state.current.id;
+    await refreshAll();
+    if (id) state.current = clientById(id);
+    renderDrawerHead();
+    loadPackage(); loadNotes();
+  }
+  function copyText(v) {
+    (navigator.clipboard ? navigator.clipboard.writeText(v) : Promise.reject()).then(
+      function () { toast('Link copiato'); },
+      function () { toast('Copia non riuscita: seleziona il link a mano', true); });
+  }
+  async function getSettings() {
+    if (state.settings) return state.settings;
+    var r = await sb.from('settings').select('package_enabled, package_paid_months, package_gift_months').eq('id', 1).maybeSingle();
+    state.settings = r.data || { package_enabled: true, package_paid_months: 12, package_gift_months: 2 };
+    return state.settings;
+  }
+  async function loadPackage() {
+    var c = state.current; if (!c) return;
+    var sum = $('#packageSummary'), body = $('#packageBody'), list = $('#packageList');
+    var st = await getSettings();
+    var r = await sb.from('annual_packages').select('*').eq('client_id', c.id).order('created_at', { ascending: false });
+    if (!state.current || state.current.id !== c.id) return;   // nel frattempo è stata aperta un'altra scheda
+    sum.textContent = ''; body.textContent = ''; list.textContent = '';
+    if (r.error) { list.appendChild(el('li', { class: 'adm-error', text: errText(r.error) })); return; }
+    var open = r.data.filter(function (p) { return ['in_attesa', 'pagato', 'attivo'].indexOf(p.status) >= 0; })[0];
+
+    if (open) {
+      var total = open.paid_months + open.gift_months;
+      sum.appendChild(badge(LABEL.pkg[open.status], TONE.pkg[open.status]));
+      sum.appendChild(badge(open.paid_months + ' canoni da ' + euro(open.monthly_rate_cents / 100) + ' = ' + euro(open.amount_cents / 100), 'muted'));
+      if (open.status !== 'in_attesa') sum.appendChild(badge('Mese ' + open.months_used + ' di ' + total, 'info'));
+      if (open.status === 'in_attesa') {
+        if (open.stripe_invoice_url) {
+          var url = el('input', { class: 'adm-input', readonly: 'readonly', 'aria-label': 'Link di pagamento' });
+          url.value = open.stripe_invoice_url;
+          var cp = el('button', { class: 'pill', type: 'button', text: 'Copia' });
+          cp.addEventListener('click', function () { copyText(open.stripe_invoice_url); });
+          var op = el('a', { class: 'pill', href: open.stripe_invoice_url, target: '_blank', rel: 'noopener noreferrer', text: 'Apri' });
+          body.appendChild(el('p', { class: 'adm-hint', text: 'Link di pagamento della fattura Stripe: giralo al cliente su WhatsApp se non trova l\'email.' }));
+          body.appendChild(el('div', { class: 'adm-token__row' }, [url, cp, op]));
+        }
+        var cancel = el('button', { class: 'pill', type: 'button', text: 'Annulla fattura' });
+        cancel.addEventListener('click', async function () {
+          if (!confirm('Annullare la fattura del pacchetto annuale per ' + c.business_name + '? Viene annullata anche su Stripe.')) return;
+          cancel.disabled = true;
+          try { await callPackage({ action: 'cancel', package_id: open.id }); await afterPackageChange('Fattura del pacchetto annullata'); }
+          catch (e) { toast(e.message, true); cancel.disabled = false; }
+        });
+        body.appendChild(el('div', { class: 'adm-actions' }, [cancel]));
+      } else {
+        var refund = Math.max(open.amount_cents - open.months_used * open.monthly_rate_cents, 0);
+        body.appendChild(el('p', { class: 'adm-muted', text: 'Se disdice oggi: rimborso di ' + euro(refund / 100) +
+          ' (pagato ' + euro(open.amount_cents / 100) + ' meno ' + open.months_used + ' canoni goduti a ' + euro(open.monthly_rate_cents / 100) + ').' }));
+        var close = el('button', { class: 'pill', type: 'button', text: 'Chiudi pacchetto (disdetta)' });
+        close.addEventListener('click', async function () {
+          var note = prompt('Chiudere il pacchetto di ' + c.business_name + '?\n\nPrima fai su Stripe il rimborso di ' + euro(refund / 100) +
+            ' e azzera il credito residuo del cliente: qui viene solo registrato.\n\nNota (facoltativa):', 'Disdetta, rimborsati ' + euro(refund / 100));
+          if (note === null) return;
+          close.disabled = true;
+          try { await callPackage({ action: 'cancel', package_id: open.id, note: note }); await afterPackageChange('Pacchetto chiuso'); }
+          catch (e) { toast(e.message, true); close.disabled = false; }
+        });
+        body.appendChild(el('div', { class: 'adm-actions' }, [close]));
+      }
+    } else {
+      var rate = Number(c.monthly_rate || 0);
+      sum.appendChild(badge('Nessun pacchetto aperto', 'muted'));
+      body.appendChild(el('p', { class: 'adm-muted', text: 'Fattura di ' + st.package_paid_months + ' canoni da ' + euro(rate) + ' = ' +
+        euro(rate * st.package_paid_months) + '. Il cliente riceve ' + (st.package_paid_months + st.package_gift_months) + ' canoni di servizio.' }));
+      var why = !st.package_enabled ? 'Il pacchetto annuale è disattivato nelle impostazioni.'
+        : !c.stripe_customer_id ? 'Serve lo Stripe customer ID: inseriscilo nella scheda Dati e salva.'
+        : c.subscription_status === 'scaduto' ? 'L\'abbonamento è scaduto.' : '';
+      var create = el('button', { class: 'pill pill--solid', type: 'button', text: 'Crea fattura del pacchetto' });
+      create.disabled = !!why;
+      create.addEventListener('click', async function () {
+        if (!confirm('Creare e inviare a ' + c.business_name + ' la fattura Stripe di ' + euro(rate * st.package_paid_months) +
+          ' per il pacchetto annuale (' + st.package_paid_months + ' + ' + st.package_gift_months + ' canoni)?')) return;
+        create.disabled = true;
+        try {
+          var d = await callPackage({ action: 'create', client_id: c.id });
+          await afterPackageChange('Fattura creata' + (d.emailed ? ' e inviata per email al cliente' : ': copia il link di pagamento'));
+        } catch (e) { toast(e.message, true); create.disabled = false; }
+      });
+      if (why) body.appendChild(el('p', { class: 'adm-hint', text: why }));
+      body.appendChild(el('div', { class: 'adm-actions' }, [create]));
+    }
+
+    if (!r.data.length) list.appendChild(el('li', { class: 'adm-muted', text: 'Nessun pacchetto.' }));
+    r.data.forEach(function (p) {
+      list.appendChild(el('li', { class: 'adm-log__item' }, [
+        el('div', { class: 'adm-log__meta' }, [badge(LABEL.pkg[p.status], TONE.pkg[p.status]), el('time', { text: fmtTime(p.paid_at || p.created_at) }),
+          el('span', { text: euro(p.amount_cents / 100) })]),
+        el('div', { class: 'adm-log__row' }, [
+          el('div', null, [el('strong', { text: p.paid_months + ' + ' + p.gift_months + ' canoni' }),
+            el('p', { class: 'adm-muted', text: 'Mesi usati: ' + p.months_used + ' di ' + (p.paid_months + p.gift_months) +
+              (p.credit_cents ? ' · credito caricato ' + euro(p.credit_cents / 100) : '') }),
+            p.note ? el('p', { class: 'adm-muted', text: p.note }) : null])
+        ])
       ]));
     });
   }

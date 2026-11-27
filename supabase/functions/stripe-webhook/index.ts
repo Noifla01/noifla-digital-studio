@@ -8,13 +8,15 @@
 //
 // Eventi gestiti: invoice.paid, invoice.payment_failed,
 //                 customer.subscription.updated, customer.subscription.deleted
-// Dopo ogni invoice.paid accredita anche i mesi gratis della promo «Porta un amico».
+// Dopo ogni invoice.paid accredita anche i mesi gratis della promo «Porta un amico»
+// e il credito dei pacchetti annuali pagati.
 
 import Stripe from 'npm:stripe@17.7.0';
 import { createClient } from 'npm:@supabase/supabase-js@2.45.4';
 import { handleStripeEvent } from './handler.js';
 import { notifyLoyalty, resendSender } from './notify.js';
 import { applyReferralCredits } from './referral.js';
+import { applyPackageCredits, markPackagePaid } from './package.js';
 
 // avvisi email per i 36 mesi (facoltativi): RESEND_API_KEY, MAIL_FROM, ADMIN_EMAIL, ADMIN_URL
 const resendKey = Deno.env.get('RESEND_API_KEY') ?? '';
@@ -59,6 +61,18 @@ Deno.serve(async (req) => {
   try {
     const result = await handleStripeEvent(event, rpc);
     console.log(event.type, event.id, '→', result);
+
+    // pacchetto annuale: registra il pagamento (un errore qui fa ripetere l'evento: è idempotente)
+    // e carica subito il credito di 14 canoni sul saldo Stripe del cliente
+    if (event.type === 'invoice.paid') {
+      const pkg = await markPackagePaid(event.data.object, rpc);
+      if (pkg) console.log('pacchetto annuale:', pkg);
+      try {
+        console.log('pacchetto annuale:', await applyPackageCredits(rpc, stripe));
+      } catch (err) {
+        console.error('pacchetto annuale non accreditato:', (err as Error).message);
+      }
+    }
 
     // promo «Porta un amico»: dopo un pagamento accredita su Stripe i mesi gratis pronti
     // (anche quelli nati da questo pagamento). Un errore qui non fa ripetere l'evento:

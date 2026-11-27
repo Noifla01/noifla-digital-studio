@@ -289,7 +289,8 @@
       var topic = t.getAttribute('data-contact');
       // il testo precompilato segue l'ultimo pulsante cliccato; se il cliente ha scritto qualcosa di suo, non lo tocchiamo
       if (topic && (!msg.value.trim() || msg.value === autoMsg)) {
-        autoMsg = /^Piano /.test(topic) ? 'Mi interessa il ' + topic + '.' : 'Mi interessa un sito come il concept "' + topic + '".';
+        autoMsg = /^(Piano|Pacchetto) /.test(topic) ? 'Mi interessa il ' + topic + (/^Pacchetto/.test(topic) ? ' (12 mesi + 2 in regalo).' : '.')
+          : 'Mi interessa un sito come il concept "' + topic + '".';
         msg.value = autoMsg;
       }
       var m = getModal();
