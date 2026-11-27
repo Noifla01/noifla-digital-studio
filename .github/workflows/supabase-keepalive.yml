@@ -1,0 +1,51 @@
+# Tiene attivo il progetto Supabase gratuito, che va in pausa dopo 7 giorni senza richieste.
+# Ogni 3 giorni fa una lettura leggera sul database (la stessa dell'area clienti, con un codice
+# finto: non legge né scrive dati di nessuno).
+#
+# Da impostare una volta su GitHub: Settings → Secrets and variables → Actions → Variables
+#   SUPABASE_URL       = https://<progetto>.supabase.co
+#   SUPABASE_ANON_KEY  = la chiave "anon" (è pubblica, la stessa di js/supabase-config.js)
+# Finché non ci sono, il controllo non fa nulla e non dà errore.
+
+name: Supabase sempre attivo
+
+on:
+  schedule:
+    - cron: '17 6 */3 * *'   # ogni 3 giorni alle 6:17 UTC
+  workflow_dispatch:          # pulsante «Run workflow» per provarlo a mano
+
+permissions:
+  contents: read
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Richiesta al database
+        env:
+          SUPABASE_URL: ${{ vars.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ vars.SUPABASE_ANON_KEY }}
+        run: |
+          if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_ANON_KEY" ]; then
+            echo "::notice::SUPABASE_URL o SUPABASE_ANON_KEY non impostate: niente da fare."
+            exit 0
+          fi
+          code=$(curl -sS -o /tmp/risposta.txt -w '%{http_code}' --max-time 60 --retry 3 --retry-delay 20 \
+            -X POST "${SUPABASE_URL%/}/rest/v1/rpc/client_portal" \
+            -H "apikey: $SUPABASE_ANON_KEY" \
+            -H "Authorization: Bearer $SUPABASE_ANON_KEY" \
+            -H "Content-Type: application/json" \
+            -d '{"p_token":"keepalive-github"}')
+          echo "Supabase ha risposto $code"
+          # il codice finto viene rifiutato con «link non valido» (403, codice 28000):
+          # vuol dire che il database ha eseguito la lettura, quindi il progetto è attivo
+          if [ "$code" = "403" ] && grep -q '"28000"' /tmp/risposta.txt; then
+            echo "Progetto attivo."
+            exit 0
+          fi
+          if [ "$code" != "200" ]; then
+            cat /tmp/risposta.txt
+            echo "::error::Supabase non ha risposto correttamente: forse il progetto è in pausa. Riattivalo dalla dashboard di Supabase."
+            exit 1
+          fi
