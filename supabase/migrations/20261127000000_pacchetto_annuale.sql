@@ -193,7 +193,7 @@ begin
 end $$;
 
 -- ---------- funzioni per il webhook (service_role) ----------
--- la fattura del pacchetto è stata pagata: il credito da caricare è pagato + mesi in regalo
+-- la fattura del pacchetto è stata pagata: il credito da caricare è canoni pagati + mesi in regalo
 create or replace function public.package_mark_paid(p_id bigint, p_invoice_id text, p_total_cents int, p_paid_at timestamptz)
 returns text
 language plpgsql
@@ -212,7 +212,8 @@ begin
     status            = 'pagato',
     stripe_invoice_id = p_invoice_id,
     paid_at           = coalesce(p_paid_at, now()),
-    credit_cents      = coalesce(nullif(p_total_cents, 0), amount_cents) + gift_months * monthly_rate_cents
+    -- credito = canoni pagati + canoni in regalo; il bollo della fattura (p_total_cents lo include) non conta
+    credit_cents      = amount_cents + gift_months * monthly_rate_cents
   where id = p_id;
 
   insert into public.client_notes (client_id, kind, body)

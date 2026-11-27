@@ -609,6 +609,8 @@
       function () { toast('Link copiato'); },
       function () { toast('Copia non riuscita: seleziona il link a mano', true); });
   }
+  // marca da bollo da 2€ sulle fatture senza IVA sopra 77,47€, a carico del cliente (la aggiunge annual-package)
+  function bolloText(eur) { return eur > 77.47 ? ' + 2,00 € di bollo' : ''; }
   async function getSettings() {
     if (state.settings) return state.settings;
     var r = await sb.from('settings').select('package_enabled, package_paid_months, package_gift_months').eq('id', 1).maybeSingle();
@@ -628,7 +630,7 @@
     if (open) {
       var total = open.paid_months + open.gift_months;
       sum.appendChild(badge(LABEL.pkg[open.status], TONE.pkg[open.status]));
-      sum.appendChild(badge(open.paid_months + ' canoni da ' + euro(open.monthly_rate_cents / 100) + ' = ' + euro(open.amount_cents / 100), 'muted'));
+      sum.appendChild(badge(open.paid_months + ' canoni da ' + euro(open.monthly_rate_cents / 100) + ' = ' + euro(open.amount_cents / 100) + bolloText(open.amount_cents / 100), 'muted'));
       if (open.status !== 'in_attesa') sum.appendChild(badge('Mese ' + open.months_used + ' di ' + total, 'info'));
       if (open.status === 'in_attesa') {
         if (open.stripe_invoice_url) {
@@ -674,14 +676,14 @@
       var rate = Number(c.monthly_rate || 0);
       sum.appendChild(badge('Nessun pacchetto aperto', 'muted'));
       body.appendChild(el('p', { class: 'adm-muted', text: 'Fattura di ' + st.package_paid_months + ' canoni da ' + euro(rate) + ' = ' +
-        euro(rate * st.package_paid_months) + '. Il cliente riceve ' + (st.package_paid_months + st.package_gift_months) + ' canoni di servizio.' }));
+        euro(rate * st.package_paid_months) + bolloText(rate * st.package_paid_months) + '. Il cliente riceve ' + (st.package_paid_months + st.package_gift_months) + ' canoni di servizio.' }));
       var why = !st.package_enabled ? 'Il pacchetto annuale è disattivato nelle impostazioni.'
         : !c.stripe_customer_id ? 'Serve lo Stripe customer ID: inseriscilo nella scheda Dati e salva.'
         : c.subscription_status === 'scaduto' ? 'L\'abbonamento è scaduto.' : '';
       var create = el('button', { class: 'pill pill--solid', type: 'button', text: 'Crea fattura del pacchetto' });
       create.disabled = !!why;
       create.addEventListener('click', async function () {
-        if (!confirm('Creare e inviare a ' + c.business_name + ' la fattura Stripe di ' + euro(rate * st.package_paid_months) +
+        if (!confirm('Creare e inviare a ' + c.business_name + ' la fattura Stripe di ' + euro(rate * st.package_paid_months) + bolloText(rate * st.package_paid_months) +
           ' per il pacchetto annuale (' + st.package_paid_months + ' + ' + st.package_gift_months + ' canoni)?')) return;
         create.disabled = true;
         try {

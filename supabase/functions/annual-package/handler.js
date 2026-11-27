@@ -10,6 +10,8 @@
 
 const euro = (cents) => (cents / 100).toLocaleString('it-IT', { style: 'currency', currency: 'EUR' });
 const PLAN = { piano_completo: 'Piano Completo', piano_base: 'Piano Base' };
+const BOLLO_CENTS = 200;          // marca da bollo da 2,00 €
+const BOLLO_SOGLIA_CENTS = 7747;  // dovuta sopra 77,47 €
 
 export async function createPackage(clientId, deps) {
   if (!deps.stripe) return { ok: false, status: 500, error: 'Stripe non configurato: manca STRIPE_SECRET_KEY.' };
@@ -52,6 +54,18 @@ export async function createPackage(clientId, deps) {
       currency: 'eur',
       description: what,
     }, { idempotencyKey: `noifla-package-item-${pkg.id}` });
+    // imposta di bollo: dovuta sulle fatture senza IVA sopra 77,47€, a carico del cliente (contratto, Art. 8.1).
+    // Non entra nel credito del pacchetto: il credito è sempre 12 canoni + 2 in regalo.
+    if (pkg.amount_cents > BOLLO_SOGLIA_CENTS) {
+      await deps.stripe.invoiceItems.create({
+        customer: c.stripe_customer_id,
+        invoice: invoice.id,
+        amount: BOLLO_CENTS,
+        currency: 'eur',
+        description: 'Imposta di bollo assolta in modo virtuale (fattura senza IVA di importo superiore a 77,47 €)',
+        metadata: { noifla_bollo: '1' },
+      }, { idempotencyKey: `noifla-package-bollo-${pkg.id}` });
+    }
     const fin = await deps.stripe.invoices.finalizeInvoice(invoice.id);
     // Stripe invia la fattura per email al cliente (se ha un'email); se non riesce il link resta valido
     let sent = false;
