@@ -40,6 +40,13 @@ js/supabase-config.js                           URL e chiave anon del progetto (
 - Su [supabase.com](https://supabase.com) crea un progetto nella regione **Central EU (Frankfurt)**.
 - Piano gratuito: il progetto va in pausa dopo 7 giorni senza attività.
   Prima di incassare davvero con Stripe conviene il piano Pro, così i webhook trovano sempre il database attivo.
+- **Tenerlo attivo con il piano gratuito**: il workflow `.github/workflows/supabase-keepalive.yml` fa una lettura
+  leggera sul database ogni 3 giorni. Per attivarlo, su GitHub: **Settings → Secrets and variables → Actions →
+  Variables** e crea `SUPABASE_URL` (https://<progetto>.supabase.co) e `SUPABASE_ANON_KEY` (la chiave anon, pubblica).
+  Provalo da **Actions → Supabase sempre attivo → Run workflow**.
+  - Se il progetto è in pausa il controllo fallisce e GitHub ti manda un'email: riattivalo dalla dashboard di Supabase.
+  - GitHub sospende i controlli programmati dopo 60 giorni senza modifiche al repository (ti avvisa per email):
+    basta riattivarlo dalla scheda Actions.
 
 ### 2. Crea il database
 - Apri **SQL Editor → New query** ed esegui, nell'ordine, i file di `migrations/`:
