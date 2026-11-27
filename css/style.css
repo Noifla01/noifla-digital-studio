@@ -583,3 +583,12 @@ button.refer__link { background: none; border: 0; padding: 0; cursor: pointer; }
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; transition-delay: 0s !important; }
   .hshot img.is-loaded { animation: none; }
 }
+
+/* avviso «Email copiata» (solo da computer) */
+.mail-note {
+  position: fixed; left: 50%; bottom: 24px; z-index: 1090; max-width: min(92vw, 520px);
+  padding: 12px 18px; border-radius: 14px; background: var(--pill); border: 1px solid var(--accent);
+  color: var(--ink); font-size: 14px; line-height: 1.4; text-align: center;
+  opacity: 0; transform: translate(-50%, 12px); pointer-events: none; transition: opacity .25s, transform .25s;
+}
+.mail-note.is-on { opacity: 1; transform: translate(-50%, 0); }

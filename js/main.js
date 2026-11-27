@@ -325,5 +325,31 @@
   })();
 
 
+  /* ---------- email da computer ----------
+     Su PC il link mailto apre il programma di posta di Windows/macOS: se non è configurato
+     non succede nulla. Da computer copiamo anche l'indirizzo e lo diciamo con un avviso. */
+  (function mailCopy() {
+    if (!finePointer) return;
+    var note = null, timer = 0;
+    function show(msg) {
+      if (!note) {
+        note = document.createElement('div');
+        note.className = 'mail-note'; note.setAttribute('role', 'status'); note.setAttribute('aria-live', 'polite');
+        document.body.appendChild(note);
+      }
+      note.textContent = msg; note.classList.add('is-on');
+      clearTimeout(timer); timer = setTimeout(function () { note.classList.remove('is-on'); }, 4000);
+    }
+    document.addEventListener('click', function (e) {
+      var a = e.target.closest('a[href^="mailto:"]');
+      if (!a) return;
+      var email = a.getAttribute('href').slice(7).split('?')[0];
+      var ok = function () { show('Email copiata: ' + email + '. Se non si apre la posta, incollala nel tuo programma o in Gmail.'); };
+      var ko = function () { show('Scrivici a ' + email); };
+      if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(email).then(ok, ko); else ko();
+    });
+  })();
+
+
   requestScrollFrame();
 })();
