@@ -232,9 +232,12 @@ Come si usa:
   - Finiti i 14 mesi, l'abbonamento torna da solo al pagamento mensile. Il cliente può comprare un nuovo pacchetto.
 - Un solo pacchetto aperto per cliente.
 - **Annullare la fattura** non pagata: pulsante nella scheda, la annulla anche su Stripe.
-- **Disdetta durante il pacchetto**: la scheda mostra il **rimborso** dovuto
-  (importo pagato meno i canoni già goduti a prezzo pieno, minimo 0€). Il rimborso e l'azzeramento del credito
-  residuo si fanno **a mano su Stripe**; poi premi **Chiudi pacchetto** per registrarlo.
+- **Il pacchetto non è rimborsabile** (contratto, Art. 8-ter.5). La scheda mostra la **fine prevista**.
+  - Se il cliente disdice: il servizio resta attivo fino alla fine del pacchetto. Su Stripe imposta la cancellazione
+    dell'abbonamento a quella data, così dopo non parte nessun addebito.
+  - **Chiudi prima della fine** solo per risoluzione (Art. 15, nessun rimborso) o se chiudi tu il servizio:
+    in quel caso la scheda mostra il rimborso in proporzione ai canoni rimasti, da fare **a mano su Stripe**
+    insieme all'azzeramento del credito residuo.
 - Se nello stesso periodo il cliente ha anche un mese gratis «Porta un amico», i rinnovi da 0€ si attribuiscono prima
   al pacchetto: il conteggio delle mensilità resta giusto, il pacchetto risulta finito un mese prima.
 - Per sospendere l'offerta: `update public.settings set package_enabled = false;` I pacchetti già pagati restano validi.

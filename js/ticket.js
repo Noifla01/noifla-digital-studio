@@ -112,6 +112,7 @@
       text.textContent = 'I tuoi canoni sono già pagati: le fatture mensili sono da 0€ fino alla fine del pacchetto. Poi si torna al pagamento mensile, oppure puoi rinnovare il pacchetto.';
       stats.appendChild(badge('Mese ' + p.months_used + ' di ' + p.months_total, 'ok'));
       stats.appendChild(badge((p.months_total - p.months_used) + ' mesi rimasti', 'muted'));
+      if (p.ends_at) stats.appendChild(badge('Fino al ' + new Date(p.ends_at).toLocaleDateString('it-IT', { timeZone: 'Europe/Rome' }), 'muted'));
     } else if (p.status === 'pagato') {
       text.textContent = 'Pagamento ricevuto, grazie! Stiamo attivando il pacchetto: i prossimi canoni saranno da 0€.';
     } else if (p.status === 'in_attesa') {
@@ -124,7 +125,7 @@
       }
     } else {
       text.textContent = 'Paghi in anticipo ' + p.paid_months + ' canoni e il servizio ti copre per ' + total + ' mesi: ' + p.gift_months +
-        ' mesi in regalo. Le modifiche incluse restano le stesse ogni 30 giorni.';
+        ' mesi in regalo. Le modifiche incluse restano le stesse ogni 30 giorni. Il pacchetto non è rimborsabile.';
       var wa = el('a', 'pill pill--solid', 'Lo voglio: scrivici su WhatsApp');
       wa.href = 'https://wa.me/393522230127?text=' + encodeURIComponent('Ciao Noifla! Sono ' + (data && data.business_name ? data.business_name : 'un vostro cliente') +
         '. Vorrei passare al pacchetto annuale ' + p.paid_months + '+' + p.gift_months + '.');

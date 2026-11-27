@@ -11,7 +11,8 @@
 -- Ogni rinnovo da 0€ coperto dal pacchetto consuma un mese: i primi 12 contano come
 -- mensilità pagate (36 mesi), gli ultimi 2 sono in regalo e non contano.
 -- Le modifiche incluse ripartono a ogni rinnovo, come sempre (anche a 0€).
--- In caso di disdetta si rimborsano i canoni non goduti, calcolati a prezzo pieno.
+-- Il pacchetto non è rimborsabile: se il cliente disdice, il servizio resta attivo fino alla
+-- fine dei 14 canoni. Solo se chiude il Fornitore si rimborsa la parte non goduta, in proporzione.
 -- =====================================================================
 
 -- ---------- impostazioni ----------
@@ -26,7 +27,7 @@ alter table public.settings
 -- pagato:    fattura pagata, credito ancora da caricare su Stripe (lo fa il webhook)
 -- attivo:    credito caricato, le fatture mensili sono da 0€
 -- concluso:  tutti i mesi del pacchetto sono stati usati
--- annullato: fattura annullata prima del pagamento, oppure disdetta
+-- annullato: fattura annullata prima del pagamento, oppure contratto chiuso prima della fine
 create type public.package_status as enum ('in_attesa', 'pagato', 'attivo', 'concluso', 'annullato');
 
 create table public.annual_packages (
@@ -165,7 +166,8 @@ begin
   return found;
 end $$;
 
--- annulla: una fattura non pagata (dopo averla annullata su Stripe) o un pacchetto in corso (disdetta)
+-- annulla: una fattura non pagata (dopo averla annullata su Stripe) o un pacchetto in corso
+-- chiuso prima della fine (risoluzione, o recesso del Fornitore con rimborso fatto a mano su Stripe)
 create or replace function public.package_cancel(p_id bigint, p_note text)
 returns public.package_status
 language plpgsql
@@ -280,8 +282,14 @@ select
   pk.status                                                                as package_status,
   pk.months_used                                                           as package_months_used,
   pk.paid_months + pk.gift_months                                          as package_months_total,
+  -- rimborso dovuto SOLO se è il Fornitore a chiudere: parte non goduta, in proporzione ai canoni rimasti
   case when pk.status in ('pagato', 'attivo')
-       then greatest(pk.amount_cents - pk.months_used * pk.monthly_rate_cents, 0) end as package_refund_cents
+       then round(pk.amount_cents::numeric * greatest(pk.paid_months + pk.gift_months - pk.months_used, 0)
+                  / (pk.paid_months + pk.gift_months))::int end                    as package_refund_cents,
+  -- fine prevista: ultimo periodo coperto + i canoni rimasti da 30 giorni
+  case when pk.status = 'attivo'
+       then coalesce((select max(py.period_end) from public.payments py where py.annual_package_id = pk.id), pk.credited_at)
+            + (pk.paid_months + pk.gift_months - pk.months_used) * interval '30 days' end as package_ends_at
 from public.clients c
 cross join s
 left join lateral (
@@ -355,6 +363,7 @@ begin
       'status',       o.package_status,
       'months_used',  o.package_months_used,
       'months_total', o.package_months_total,
+      'ends_at',      o.package_ends_at,
       'paid_months',  s.package_paid_months,
       'gift_months',  s.package_gift_months,
       'invoice_url',  case when o.package_status = 'in_attesa'
