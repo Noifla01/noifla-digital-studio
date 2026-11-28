@@ -423,10 +423,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 .about__text p:first-child { color: var(--ink); }
 .about__sign { display: flex; align-items: center; gap: 14px; margin-top: 26px; font-size: 14px; line-height: 1.4; color: var(--muted); }
 .about__sign strong { color: var(--ink); font-weight: 500; font-size: 15px; }
-.about__mark {
-  flex: none; display: grid; place-items: center; width: 46px; height: 46px; border-radius: 50%;
-  border: 1px solid var(--accent); color: var(--accent); font-size: 20px; font-weight: 500; letter-spacing: -0.02em;
-}
+.about__logo { flex: none; width: 64px; height: 64px; border-radius: 16px; }
 .about__how { padding: clamp(20px, 2.4vw, 32px); border: 1px solid var(--rule); border-radius: 22px; background: var(--bg-2); }
 .about__how-title { font-size: 15px; font-weight: 500; color: var(--muted); letter-spacing: 0; margin-bottom: 18px; }
 .timeline { list-style: none; margin: 0; padding: 0; }
